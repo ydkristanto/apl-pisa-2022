@@ -1,0 +1,43 @@
+---
+title: "Pengumpulan Data"
+author: "Yosep Dwi Kristanto"
+format: html
+editor: visual
+---
+
+```{r}
+#| include: false
+
+library(tidyverse)
+library(readxl)
+
+```
+
+## Rerata dan Variasi Skor Matematika
+
+```{r}
+rerata_var_matematika <- read_excel("set-data/xmrlsh.xlsx", 
+    sheet = "Table I.B1.2.1", skip = 8, n_max = 84) %>% 
+  rename(negara = ...1,
+         skor_rerata = `Mean score`,
+         se_rerata = S.E....3,
+         sd = S.D.,
+         se_sd = S.E....5,
+         skor_10 = Score...6,
+         se_10 = S.E....7,
+         skor_25 = Score...8,
+         se_25 = S.E....9,
+         skor_50 = Score...10,
+         se_50 = S.E....11,
+         skor_75 = Score...12,
+         se_75 = S.E....13,
+         skor_90 = Score...14,
+         se_90 = S.E....15,
+         selisih_90_10 = `Score dif.`,
+         se_selisih_90_10 = S.E....17) %>% 
+  filter(!negara %in% c("OECD", "Partners"))
+
+write_csv(rerata_var_matematika,
+          file = "set-data/rerata_var_matematika.csv")
+
+```
