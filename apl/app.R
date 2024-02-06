@@ -2,6 +2,7 @@
 library(shiny)
 library(tidyverse)
 library(bslib)
+library(ggrepel)
 
 # Data ----
 ## Data performa ----
@@ -47,6 +48,49 @@ data_literasi <- tibble(
   d_90_10 = d_90_10,
   d_90_10_se = d_90_10_se
 )
+## Data kecemasan dan pola pikir ----
+index_cemas <- c(0.17, 0.03, 0.21, 0.16, 0.59, 0.54, 0.52, 0.02, -0.12, 0.01, -0.29, 0.13, 0.1, 0.26, -0.21, 0.06, 0.21, "m", 0.39, 0.33, -0.05, 0.23, 0.18, 0.54, -0.22, 0.22, 0.17, 0.26, 0.14, 0.24, 0.2, 0.37, -0.07, -0.12, 0.59, 0.04, 0.13, 0.17, 0.01, 0.53, 0.15, 0.53, 0.67, 0.2, 0.5, 0.11, 0.19, 0.51, 0.59, 0.04, 0.68, 0.23, "m", 0.47, 0.23, 0.18, 0.26, 0.28, 0.5, 0.37, 0.36, 0.32, 0.16, 0.41, 0.17, 0.22, 0.61, 0.63, 0.53, "m", 0.19, 0.17, 0.11, 0.2, 0.15, 0.29, "m", 0.2, 0.14, 0.37, 0.04, 0.45)
+persen_pikir_tetap <- c(34.26, 28.54, 47.37, 37.53, 38.81, 57.45, 46.11, 49.74, 37.35, 26.14, 40.78, 54.14, 27.86, 59.33, 43.22, 43.14, 27.12, "m", 50.2, 29, 45.47, 41.21, 42.48, 58.44, 58.85, 34.89, 41.28, 46.63, 45.83, 43.9, 47.86, 47.13, 29.55, 38.86, 51.88, 36.38, 30.22, 42.19, 69.3, 51.72, 56.77, 38.88, 54.65, 41.03, "m", 45.84, 52.91, 61.85, 64.22, 43.22, "m", 59.95, 64.63, 64.91, 50.91, 33.13, 66.15, 59.17, 61.88, 50.5, 65.98, 54.65, 52.5, 51.47, 60.02, 59.49, 60.46, "m", 56.38, 64.65, 54.75, 57.17, 59.22, 48.73, 39.13, 45.07, 51.81, 40.76, 50.44, 47.89, 47.74, "m")
+persen_pikir_tumbuh <- c(65.74, 71.46, 52.63, 62.47, 61.19, 42.55, 53.89, 50.26, 62.65, 73.86, 59.22, 45.86, 72.14, 40.67, 56.78, 56.86, 72.88, "m", 49.8, 71, 54.53, 58.79, 57.52, 41.56, 41.15, 65.11, 58.72, 53.37, 54.17, 56.1, 52.14, 52.87, 70.45, 61.14, 48.12, 63.62, 69.78, 57.81, 30.7, 48.28, 43.23, 61.12, 45.35, 58.97, "m", 54.16, 47.09, 38.15, 35.78, 56.78, "m", 40.05, 35.37, 35.09, 49.09, 66.87, 33.85, 40.83, 38.12, 49.5, 34.02, 45.35, 47.5, 48.53, 39.98, 40.51, 39.54, "m", 43.62, 35.35, 45.25, 42.83, 40.78, 51.27, 60.87, 54.93, 48.19, 59.24, 49.56, 52.11, 52.26, "m")
+index_cemas_pikir_tetap <- c(0.33, 0.15, 0.25, 0.26, 0.62, 0.56, 0.57, 0.11, 0.07, 0.11, -0.27, 0.11, 0.16, 0.23, -0.13, 0.15, 0.41, "m", 0.38, 0.55, 0.06, 0.35, 0.24, 0.59, -0.19, 0.4, 0.32, 0.27, 0.22, 0.24, 0.25, 0.42, 0.04, -0.11, 0.64, 0.21, 0.3, 0.25, -0.02, 0.54, 0.16, 0.61, 0.75, 0.17, "m", 0.16, 0.22, 0.52, 0.59, 0.05, "m", 0.35, "m", 0.51, 0.19, 0.22, 0.26, 0.43, 0.55, 0.45, 0.35, 0.34, 0.15, 0.43, 0.17, 0.2, 0.6, "m", 0.6, "m", 0.18, 0.21, 0.11, 0.23, 0.3, 0.43, "m", 0.2, 0.21, 0.43, 0.08, "m")
+index_cemas_pikir_tumbuh <- c(0.1, -0.02, 0.16, 0.09, 0.51, 0.51, 0.44, -0.07, -0.23, -0.02, -0.31, 0.17, 0.08, 0.3, -0.26, -0.03, 0.13, "m", 0.4, 0.24, -0.15, 0.14, 0.14, 0.49, -0.23, 0.13, 0.06, 0.25, 0.07, 0.25, 0.16, 0.32, -0.12, -0.13, 0.54, -0.06, 0.04, 0.11, 0.05, 0.5, 0.13, 0.48, 0.57, 0.21, "m", 0.06, 0.15, 0.48, 0.58, 0.02, "m", 0.06, "m", 0.41, 0.27, 0.15, 0.23, 0.06, 0.41, 0.3, 0.36, 0.3, 0.16, 0.38, 0.14, 0.25, 0.6, "m", 0.45, "m", 0.19, 0.1, 0.1, 0.17, 0.06, 0.16, "m", 0.18, 0.07, 0.31, 0, "m")
+cemas_rendah_pikir_tetap <- c(28.96, 25.41, 46.62, 33.1, 34.16, 53.2, 41.9, 44.72, 30.52, 22.93, 37.26, 55.43, 24.96, 62.39, 39.38, 39.81, 22.06, "m", 49.64, 23.83, 42.17, 36.1, 38.41, 53.34, 57.06, 27.55, 35.12, 47.01, 43.79, 46.04, 45.68, 44.24, 27.5, 39.27, 50.06, 28.6, 24.29, 38.96, 72.64, 47.02, 55.97, 33.59, 45.12, 41.84, "m", 45.05, 54.29, 58.07, 60.1, 40.94, "m", 51.31, "m", 57.8, 52.52, 28.99, 65.31, 47.6, 54.57, 45.26, 66.3, 53.04, 52.11, 49.48, 60.01, 59.29, 59.65, "m", 49.98, "m", 53.78, 53.42, 57.91, 47.48, 32.77, 36.67, "m", 40.32, 46.39, 44.24, 46.31, "m")
+cemas_rendah_pikir_tumbuh <- c(71.04, 74.59, 53.38, 66.9, 65.84, 46.8, 58.1, 55.28, 69.48, 77.07, 62.74, 44.57, 75.04, 37.61, 60.62, 60.19, 77.94, "m", 50.36, 76.17, 57.83, 63.9, 61.59, 46.66, 42.94, 72.45, 64.88, 52.99, 56.21, 53.96, 54.32, 55.76, 72.5, 60.73, 49.94, 71.4, 75.71, 61.04, 27.36, 52.98, 44.03, 66.41, 54.88, 58.16, "m", 54.95, 45.71, 41.93, 39.9, 59.06, "m", 48.69, "m", 42.2, 47.48, 71.01, 34.69, 52.4, 45.43, 54.74, 33.7, 46.96, 47.89, 50.52, 39.99, 40.71, 40.35, "m", 50.02, "m", 46.22, 46.58, 42.09, 52.52, 67.23, 63.33, "m", 59.68, 53.61, 55.76, 53.69, "m")
+cemas_tinggi_pikir_tetap <- c(42.59, 33.23, 50.87, 42.91, 42.94, 55.51, 51.22, 56.64, 47.49, 29.78, 43.05, 52.02, 29.59, 58.48, 49.11, 50.81, 34.45, "m", 49.71, 38.23, 55.62, 48.08, 45.77, 61.39, 59.59, 44.33, 48.58, 47.02, 52.86, 45.3, 49.28, 50.46, 34.13, 40.87, 56.55, 45.18, 37.4, 46.7, 70.57, 48.66, 58.54, 41.16, 59.92, 40.84, "m", 49.71, 55.31, 60.23, 62.29, 43.51, "m", 69.52, "m", 68.08, 47.97, 34.58, 66.73, 71.06, 65.39, 54.36, 65.5, 55.81, 52.5, 51.53, 60.15, 57.69, 58.98, "m", 60.29, "m", 54.16, 60.32, 59.2, 51.5, 47.61, 54.89, "m", 42.69, 55.38, 50.84, 49.85, "m")
+cemas_tinggi_pikir_tumbuh <- c(57.41, 66.77, 49.13, 57.09, 57.06, 44.49, 48.78, 43.36, 52.51, 70.22, 56.95, 47.98, 70.41, 41.52, 50.89, 49.19, 65.55, "m", 50.29, 61.77, 44.38, 51.92, 54.23, 38.61, 40.41, 55.67, 51.42, 52.98, 47.14, 54.7, 50.72, 49.54, 65.87, 59.13, 43.45, 54.82, 62.6, 53.3, 29.43, 51.34, 41.46, 58.84, 40.08, 59.16, "m", 50.29, 44.69, 39.77, 37.71, 56.49, "m", 30.48, "m", 31.92, 52.03, 65.42, 33.27, 28.94, 34.61, 45.64, 34.5, 44.19, 47.5, 48.47, 39.85, 42.31, 41.02, "m", 39.71, "m", 45.84, 39.68, 40.8, 48.5, 52.39, 45.11, "m", 57.31, 44.62, 49.16, 50.15, "m")
+mat_cemas_rendah_pikir_tetap <- c(479.6, 528.9, 515.8, 526.4, 418, 393.2, 386.2, 540.8, 539.6, 542, 526.1, 523.5, 536.2, 474.9, 522.6, 484.2, 481.5, "m", 499.5, 530.3, 549.4, 506.2, 507.7, 409.5, 522.7, 493.2, 504.3, 526.7, 497.8, 504.2, 510.3, 499, 538.7, 559.1, 469.1, 512.1, 456.7, 500.4, 407.4, 403, 432.3, 382.2, 437.6, 437.2, "m", 489.2, 469.5, 353.8, 363.5, 421.2, "m", 588.3, "m", 395.1, 381.4, 436.1, 381.2, 585.6, 422.3, 506.5, 462.8, 444.8, 444.1, 381.5, 411, 388.9, 372.5, "m", 403.5, "m", 438.1, 451.8, 405.7, 468.2, 602.2, 558.8, "m", 452.6, 443.8, 438.3, 377, "m")
+mat_cemas_rendah_pikir_tumbuh <- c(543.4, 546.4, 527.8, 560.9, 460.7, 430.2, 422.3, 537.2, 556.9, 566.2, 545.2, 526.4, 540, 478.9, 538.7, 519.4, 533.7, "m", 507.7, 555.9, 564, 537.6, 521.9, 431.8, 546.9, 534.1, 536.2, 525.9, 522.2, 513.8, 527.6, 519.4, 551.1, 560.5, 473.4, 548.1, 526.2, 523.3, 424.2, 439.4, 453.6, 438.3, 484.6, 473.1, "m", 502.3, 492.6, 372.7, 381.8, 449.5, "m", 564.1, "m", 441.3, 390.8, 459.9, 393.8, 584.6, 427.8, 526.6, 454.2, 473, 451.1, 386.7, 443.9, 391.8, 408.4, "m", 453.2, "m", 484.3, 484.8, 422, 481.1, 625.8, 579.5, "m", 479.5, 508.7, 468, 399.1, "m")
+mat_cemas_tinggi_pikir_tetap <- c(433.9, 459.3, 473.8, 459, 389, 377.5, 362.2, 453.8, 434.1, 458.9, 451.4, 456, 445.7, 411.2, 431.3, 431.6, 450.5, "m", 453.6, 509.4, 493.8, 448, 445.9, 383.7, 482.2, 437.5, 440.5, 475.1, 425.2, 440.8, 463, 448.4, 444.6, 478.2, 433.4, 446.6, 414.1, 442.9, 360.4, 372.2, 402.6, 355.4, 432.2, 413.5, "m", 437.6, 413.1, 345, 347.3, 373.1, "m", 515.4, "m", 376.3, 357.4, 399, 350.4, 527.4, 404.2, 427.8, 400.3, 406.2, 393.6, 364.3, 380, 359.5, 364.3, "m", 384.2, "m", 398.3, 409, 373.1, 419.4, 522.6, 519.3, "m", 406, 405, 397.2, 356.4, "m")
+mat_cemas_tinggi_pikir_tumbuh <- c(481.7, 479.5, 480.4, 490.6, 411.9, 399.3, 379.5, 460.1, 461.6, 482.2, 460, 461.6, 463.9, 413.6, 446.6, 447.7, 483.1, "m", 455.9, 527.6, 501, 458.3, 459.9, 395.2, 494.4, 486.1, 449.5, 472.2, 466.7, 455.6, 477.4, 462.9, 456.6, 488.8, 444.3, 480, 457, 460.9, 353.1, 385, 408.3, 384.6, 454.2, 421, "m", 449.1, 427.5, 339.4, 349.4, 379.2, "m", 508.7, "m", 402.4, 351, 405.1, 343.6, 522.4, 403, 464.8, 393.4, 420.7, 390.6, 356.1, 391.2, 355.9, 378.2, "m", 399.3, "m", 412.5, 430.6, 376.5, 434.2, 554.8, 518.8, "m", 434.4, 425.8, 412.1, 354.4, "m")
+data_literasi_mat <- data_literasi %>%
+  filter(literasi == "Matematika") %>%
+  select(kode_negara, negara, rerata)
+lit_cemas_pikir <- data_literasi_mat %>%
+  mutate(
+    index_cemas = as.numeric(replace(
+      index_cemas,
+      index_cemas == "m", NA
+    )),
+    persen_pikir_tetap = as.numeric(replace(
+      persen_pikir_tetap,
+      persen_pikir_tetap == "m", NA
+    )),
+    persen_pikir_tumbuh = as.numeric(replace(
+      persen_pikir_tumbuh,
+      persen_pikir_tumbuh == "m",
+      NA
+    )),
+    index_cemas_pikir_tetap = as.numeric(replace(index_cemas_pikir_tetap, index_cemas_pikir_tetap == "m", NA)),
+    index_cemas_pikir_tumbuh = as.numeric(replace(index_cemas_pikir_tumbuh, index_cemas_pikir_tumbuh == "m", NA)),
+    cemas_rendah_pikir_tetap = as.numeric(replace(cemas_rendah_pikir_tetap, cemas_rendah_pikir_tetap == "m", NA)),
+    cemas_rendah_pikir_tumbuh = as.numeric(replace(cemas_rendah_pikir_tumbuh, cemas_rendah_pikir_tumbuh == "m", NA)),
+    cemas_tinggi_pikir_tetap = as.numeric(replace(cemas_tinggi_pikir_tetap, cemas_tinggi_pikir_tetap == "m", NA)),
+    cemas_tinggi_pikir_tumbuh = as.numeric(replace(cemas_tinggi_pikir_tumbuh, cemas_tinggi_pikir_tumbuh == "m", NA)),
+    mat_cemas_rendah_pikir_tetap = as.numeric(replace(mat_cemas_rendah_pikir_tetap, mat_cemas_rendah_pikir_tetap == "m", NA)),
+    mat_cemas_rendah_pikir_tumbuh = as.numeric(replace(mat_cemas_rendah_pikir_tumbuh, mat_cemas_rendah_pikir_tumbuh == "m", NA)),
+    mat_cemas_tinggi_pikir_tetap = as.numeric(replace(mat_cemas_tinggi_pikir_tetap, mat_cemas_tinggi_pikir_tetap == "m", NA)),
+    mat_cemas_tinggi_pikir_tumbuh = as.numeric(replace(mat_cemas_tinggi_pikir_tumbuh, mat_cemas_tinggi_pikir_tumbuh == "m", NA))
+  )
 
 # Antarmuka ----
 ui <- page_navbar(
@@ -96,8 +140,31 @@ ui <- page_navbar(
     ),
     ## Sidebar kecemasan dan pola pikir ----
     conditionalPanel(
-      "input.nav === 'Kecemasan dan Pola Pikir'",
-      "Sidebar kecemasan dan pola pikir"
+      "input.nav === 'Pola Pikir'",
+      radioButtons("cemas_pikir_grup",
+        p("Bandingkan dengan:", style = "font-weight: bold;"),
+        choices = c(
+          "Rerata OECD" = "oecd",
+          "Lima negara teratas" = "lima_atas",
+          "Asia Tenggara" = "asia_tenggara",
+          "Populasi setara" = "pop_besar",
+          "Negara-negara terpilih" = "pilih_negara"
+        ),
+        selected = "oecd"
+      ),
+      conditionalPanel(
+        "input.cemas_pikir_grup == 'pilih_negara'",
+        hr(),
+        selectInput("cemas_pikir_negara",
+          p("Pilih negara:", style = "font-weight: bold;"),
+          choices = setNames(
+            daftar_kode,
+            daftar_negara
+          ),
+          multiple = TRUE,
+          selectize = TRUE
+        )
+      )
     ),
     ## Sidebar proses dan konten ----
     conditionalPanel(
@@ -119,28 +186,48 @@ ui <- page_navbar(
       col_widths = c(4, 4, 4, 12)
     )
   ),
-  ## Menu literasi matematika ----
-  nav_menu("Literasi Matematika",
-    value = c(
-      "Kecemasan dan Pola Pikir",
-      "Proses dan Konten"
-    ),
-    ### Panel kecemasan dan pola pikir ----
-    nav_panel(
-      "Kecemasan dan Pola Pikir",
-      "Masih kosong"
-    ),
-    ### Panel proses dan konten ----
-    nav_panel(
-      "Proses dan Konten",
-      "Masih kosong"
+  ## Panel pola pikir ----
+  nav_panel(
+    "Pola Pikir",
+    layout_columns(
+      card(
+        card_header("Pola Pikir dan Rerata Skor Literasi Matematika"),
+        plotOutput("plot_cemas_mat")
+      ),
+      value_box(
+        title = "R Kuadrat",
+        value = textOutput("teks_R_kuadrat"),
+        theme = "secondary"
+      ),
+      card(
+        card_header("Persentase Siswa dengan Pola Pikir Tetap dan Tumbuh"),
+        plotOutput("plot_cemas_pikir")
+      ),
+      card(
+        card_header("Literasi Matematika, Kecemasan Matematika, dan Pola Pikir"),
+        plotOutput("plot_lit_cemas_pikir")
+      ),
+      col_widths = c(8, 4, 6, 6)
     )
   ),
-
+  ## Panel proses dan konten ----
+  nav_panel(
+    "Proses dan Konten",
+    "Masih kosong"
+  ),
   ## Panel kesetaraan ----
   nav_panel("Kesetaraan", "Page 3 contents"),
   ## Panel tren ----
-  nav_panel("Tren", "Page 3 contents")
+  nav_panel("Tren", "Page 3 contents"),
+  ## Panel informasi ----
+  nav_panel(
+    "Informasi",
+    layout_columns(
+      card(),
+      card(),
+      col_widths = c(6, 6)
+    )
+  )
 )
 
 # Peladen ----
@@ -267,17 +354,17 @@ server <- function(input, output) {
     if (input$mapel == "mat") {
       value_box("Peringkat",
         peringkat_mat$peringkat,
-        theme = "green"
+        theme = "primary"
       )
     } else if (input$mapel == "baca") {
       value_box("Peringkat",
         peringkat_baca$peringkat,
-        theme = "green"
+        theme = "primary"
       )
     } else {
       value_box("Peringkat",
         peringkat_sains$peringkat,
-        theme = "green"
+        theme = "primary"
       )
     }
   })
@@ -295,17 +382,17 @@ server <- function(input, output) {
     if (input$mapel == "mat") {
       value_box("Rerata Skor",
         round(rerata_mat$rerata, 0),
-        theme = "blue"
+        theme = "success"
       )
     } else if (input$mapel == "baca") {
       value_box("Rerata Skor",
         round(rerata_baca$rerata, 0),
-        theme = "blue"
+        theme = "success"
       )
     } else if (input$mapel == "sains") {
       value_box("Rerata Skor",
         round(rerata_sains$rerata, 0),
-        theme = "blue"
+        theme = "success"
       )
     }
   })
@@ -323,17 +410,17 @@ server <- function(input, output) {
     if (input$mapel == "mat") {
       value_box("Simpangan Baku",
         sd_mat$sd,
-        theme = "yellow"
+        theme = "secondary"
       )
     } else if (input$mapel == "baca") {
       value_box("Simpangan Baku",
         sd_baca$sd,
-        theme = "yellow"
+        theme = "secondary"
       )
     } else {
       value_box("Simpangan Baku",
         sd_sains$sd,
-        theme = "yellow"
+        theme = "secondary"
       )
     }
   })
@@ -346,6 +433,215 @@ server <- function(input, output) {
       "Literasi Membaca"
     } else {
       "Literasi Sains"
+    }
+  })
+
+  ## plot_cemas_mat ----
+  output$plot_cemas_mat <- renderPlot({
+    oecd <- c("OECD")
+    lima_atas <- c("SGP", "JPN", "KOR", "EST", "CHE")
+    asia_tenggara <- c("BRN", "MYS", "VNM", "SGP", "KHM", "THA", "PHL")
+    pop_besar <- c("USA", "MEX", "PHL", "BRA")
+    cemas_pikir_negara <- input$cemas_pikir_negara
+
+    if (input$cemas_pikir_grup == "oecd") {
+      data_sorot <- lit_cemas_pikir %>%
+        filter(kode_negara %in% c("IDN", oecd)) %>%
+        select(
+          kode_negara, negara, rerata,
+          persen_pikir_tumbuh, persen_pikir_tetap
+        )
+    } else if (input$cemas_pikir_grup == "lima_atas") {
+      data_sorot <- lit_cemas_pikir %>%
+        filter(kode_negara %in% c("IDN", lima_atas)) %>%
+        select(
+          kode_negara, negara, rerata,
+          persen_pikir_tumbuh, persen_pikir_tetap
+        )
+    } else if (input$cemas_pikir_grup == "asia_tenggara") {
+      data_sorot <- lit_cemas_pikir %>%
+        filter(kode_negara %in% c("IDN", asia_tenggara)) %>%
+        select(
+          kode_negara, negara, rerata,
+          persen_pikir_tumbuh, persen_pikir_tetap
+        )
+    } else if (input$cemas_pikir_grup == "pop_besar") {
+      data_sorot <- lit_cemas_pikir %>%
+        filter(kode_negara %in% c("IDN", pop_besar)) %>%
+        select(
+          kode_negara, negara, rerata,
+          persen_pikir_tumbuh, persen_pikir_tetap
+        )
+    } else {
+      data_sorot <- lit_cemas_pikir %>%
+        filter(kode_negara %in% c("IDN", cemas_pikir_negara)) %>%
+        select(
+          kode_negara, negara, rerata,
+          persen_pikir_tumbuh, persen_pikir_tetap
+        )
+    }
+
+    rerata_mat_oecd <- lit_cemas_pikir %>%
+      filter(kode_negara == "OECD") %>%
+      select(rerata)
+    rerata_pikir_oecd <- lit_cemas_pikir %>%
+      filter(kode_negara == "OECD") %>%
+      select(persen_pikir_tumbuh)
+
+    lit_cemas_pikir %>%
+      filter(kode_negara != "OECD") %>%
+      ggplot(aes(x = persen_pikir_tumbuh, y = rerata)) +
+      geom_hline(
+        yintercept = as.numeric(rerata_mat_oecd[1]),
+        linetype = "dashed"
+      ) +
+      geom_vline(
+        xintercept = as.numeric(rerata_pikir_oecd[1]),
+        linetype = "dashed"
+      ) +
+      geom_smooth(
+        method = "lm",
+        formula = y ~ x,
+        color = "#d95f02"
+      ) +
+      geom_point(size = 2, alpha = .3) +
+      geom_point(
+        data = data_sorot,
+        aes(x = persen_pikir_tumbuh, y = rerata),
+        size = 3, color = "#d95f02"
+      ) +
+      geom_label_repel(
+        data = data_sorot,
+        aes(
+          x = persen_pikir_tumbuh, y = rerata,
+          label = negara
+        )
+      ) +
+      theme_bw(base_size = 14) +
+      labs(
+        x = "Persentase Siswa dengan Pola Pikir Tumbuh",
+        y = "Rerata Skor\nLiterasi Matematika"
+      )
+  })
+  ## teks_R_kuadrat ----
+  output$teks_R_kuadrat <- renderText({
+    model <- lm(rerata ~ persen_pikir_tumbuh, data = lit_cemas_pikir)
+    ringkasan_model <- summary(model)
+    round(ringkasan_model$r.squared, 3)
+  })
+  ## plot_cemas_pikir ----
+  output$plot_cemas_pikir <- renderPlot({
+    oecd <- c("OECD")
+    lima_atas <- c("SGP", "JPN", "KOR", "EST", "CHE")
+    asia_tenggara <- c("BRN", "MYS", "VNM", "SGP", "KHM", "THA", "PHL")
+    pop_besar <- c("USA", "MEX", "PHL", "BRA")
+    cemas_pikir_negara <- input$cemas_pikir_negara
+    # Mempersiapkan data
+    data <- lit_cemas_pikir %>%
+      select(
+        kode_negara, negara,
+        persen_pikir_tetap, persen_pikir_tumbuh
+      ) %>%
+      pivot_longer(
+        cols = c(persen_pikir_tetap, persen_pikir_tumbuh),
+        names_to = "pola_pikir",
+        values_to = "persentase"
+      ) %>%
+      mutate(pola_pikir = ifelse(endsWith(pola_pikir, "tetap"),
+        "tetap", "tumbuh"
+      ))
+    if (input$cemas_pikir_grup == "oecd") {
+      data %>%
+        filter(kode_negara %in% c("IDN", oecd)) %>%
+        ggplot(aes(x = persentase, y = negara, col = pola_pikir)) +
+        geom_col(fill = "white") +
+        scale_color_brewer(
+          palette = "Dark2",
+          name = "Pola pikir",
+          direction = -1
+        ) +
+        theme_bw(base_size = 14) +
+        theme(
+          legend.position = "bottom",
+          axis.title.x = element_blank()
+        ) +
+        labs(x = "Persentase") +
+        coord_flip()
+    } else if (input$cemas_pikir_grup == "lima_atas") {
+      data %>%
+        filter(kode_negara %in% c("IDN", lima_atas)) %>%
+        mutate(negara = fct_reorder2(negara, pola_pikir, persentase)) %>%
+        ggplot(aes(x = persentase, y = negara, col = pola_pikir)) +
+        geom_col(fill = "white") +
+        scale_color_brewer(
+          palette = "Dark2",
+          name = "Pola pikir",
+          direction = -1
+        ) +
+        theme_bw(base_size = 14) +
+        theme(
+          legend.position = "bottom",
+          axis.title.x = element_blank()
+        ) +
+        labs(x = "Persentase") +
+        coord_flip()
+    } else if (input$cemas_pikir_grup == "asia_tenggara") {
+      data %>%
+        filter(kode_negara %in% c("IDN", asia_tenggara)) %>%
+        drop_na() %>%
+        mutate(negara = fct_reorder2(negara, pola_pikir, persentase)) %>%
+        ggplot(aes(x = persentase, y = negara, col = pola_pikir)) +
+        geom_col(fill = "white") +
+        scale_y_discrete(guide = guide_axis(n.dodge = 2)) +
+        scale_color_brewer(
+          palette = "Dark2",
+          name = "Pola pikir",
+          direction = -1
+        ) +
+        theme_bw(base_size = 14) +
+        theme(
+          legend.position = "bottom",
+          axis.title.x = element_blank()
+        ) +
+        labs(x = "Persentase") +
+        coord_flip()
+    } else if (input$cemas_pikir_grup == "pop_besar") {
+      data %>%
+        filter(kode_negara %in% c("IDN", pop_besar)) %>%
+        mutate(negara = fct_reorder2(negara, pola_pikir, persentase)) %>%
+        ggplot(aes(x = persentase, y = negara, col = pola_pikir)) +
+        geom_col(fill = "white") +
+        scale_color_brewer(
+          palette = "Dark2",
+          name = "Pola pikir",
+          direction = -1
+        ) +
+        theme_bw(base_size = 14) +
+        theme(
+          legend.position = "bottom",
+          axis.title.x = element_blank()
+        ) +
+        labs(x = "Persentase") +
+        coord_flip()
+    } else {
+      data %>%
+        filter(kode_negara %in% c("IDN", cemas_pikir_negara)) %>%
+        mutate(negara = fct_reorder2(negara, pola_pikir, persentase)) %>%
+        drop_na() %>%
+        ggplot(aes(x = persentase, y = negara, col = pola_pikir)) +
+        geom_col(fill = "white") +
+        scale_color_brewer(
+          palette = "Dark2",
+          name = "Pola pikir",
+          direction = -1
+        ) +
+        theme_bw(base_size = 14) +
+        theme(
+          legend.position = "bottom",
+          axis.title.x = element_blank()
+        ) +
+        labs(x = "Persentase") +
+        coord_flip()
     }
   })
 }
