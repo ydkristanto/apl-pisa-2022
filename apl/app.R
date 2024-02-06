@@ -187,6 +187,52 @@ data_penalaran_mat <- rbind(
   data_mat_interp,
   data_mat_nalar
 )
+## Data konten matematika ----
+rerata_ubah_hubungan <- c(485.6, 481.8, 487.9, 502.1, 411, 381.2, 380, 479.7, 481.8, 507.9, 480.4, 474.7, 469.3, 430.8, 467.4, 453.8, 491.6, 460.3, 468.6, 533.1, 524.7, 483.7, 473.3, 391.3, 489.5, 476.1, 464.5, 483.4, 471.1, 457.6, 479.3, 473.7, 479.9, 503.8, 449.5, 487.5, 465.4, 469.8, 367.2, 376.7, 394.7, 376.6, 444.6, 418.1, "m", 464.9, 422.2, 338.6, 343.5, 383.7, "m", 536.4, 361.5, 379.2, 365.4, 422.5, 351.9, 551, 406.2, 465, 410.9, 417.5, 398.4, 366.4, 385.7, 368.6, 353.4, "m", 390.2, 355.9, 416, 424.9, 389.1, 438.6, 573.5, 548.9, 390.3, 436.1, 433.9, 408.6, 364.6, "m")
+sd_ubah_hubungan <- c(106.01, 102.81, 105.46, 105.57, 85.36, 82.24, 74.62, 100.87, 87.93, 88.86, 94.3, 97.6, 105.16, 92.32, 100.48, 90.92, 82.76, 117.48, 97.44, 95.76, 113.8, 87.69, 94.91, 75.54, 115.08, 104.99, 96.63, 96.27, 97.97, 103.28, 95.16, 97.73, 98.69, 102.45, 93.97, 106.35, 97.23, 97.07, 93.44, 86.41, 93.67, 85.46, 90.01, 102.72, "m", 93.87, 107.47, 61.6, 69.68, 96.86, "m", 106.37, 78.52, 81.9, 73.92, 92.75, 70.28, 97.96, 81.66, 106.98, 90.5, 87.02, 94.06, 73.56, 91.64, 77.86, 76.87, "m", 88.13, 70.92, 97.1, 108.46, 77.33, 99.73, 106.49, 117.3, 86.4, 95.87, 115.25, 88.33, 73.69, "m")
+konten_ubah_hubungan <- tibble(
+  kode_negara = daftar_kode_oecd,
+  negara = daftar_negara_oecd,
+  konten = rep("Perubahan dan Hubungan", 82),
+  rerata = as.numeric(replace(rerata_ubah_hubungan, rerata_ubah_hubungan == "m", NA)),
+  sd = as.numeric(replace(sd_ubah_hubungan, sd_ubah_hubungan == "m", NA))
+)
+
+rerata_kuantitas <- c(483.2, 490.5, 487.9, 493.8, 409, 380.7, 384.7, 490.1, 485.3, 515.1, 485.3, 470, 476.8, 424.1, 478.6, 458.6, 493.6, 459.2, 469.7, 534.9, 526.9, 484.8, 478.8, 397.1, 496.5, 478.5, 468.6, 492.7, 465.8, 468.5, 485.3, 471.2, 479.8, 509.9, 455.5, 487.8, 460.7, 472.4, 364.7, 375.4, 395.9, 375.8, 436.3, 418.8, "m", 463.6, 412.3, 339.3, 342.6, 392.4, "m", 545.1, 362.7, 372.7, 354.7, 428.8, 355.7, 551.4, 404.4, 460.3, 418.4, 428.5, 406.1, 360.2, 388.3, 361.4, 356, "m", 391, 349.1, 409.7, 429.5, 386.1, 438.8, 579.2, 546.6, 393.9, 442.7, 425.5, 407.6, 365.9, "m")
+sd_kuantitas <- c(106.74, 97.5, 101.78, 104.68, 82.96, 75.74, 69.82, 97.12, 86.37, 92.33, 95.57, 95.1, 99.64, 87.24, 104.01, 95.48, 87.91, 110.27, 93.25, 103.49, 107.58, 84.8, 93.36, 76.5, 114.61, 104.05, 99.78, 97.01, 94.34, 110.04, 96.49, 94.5, 99.2, 101.53, 98.14, 106.35, 102.06, 96.41, 89.6, 79.96, 90.89, 83.44, 89.48, 100.63, "m", 93.34, 102.73, 60.62, 64.92, 84.86, "m", 113.88, 70.33, 77.65, 65.83, 87.44, 66.03, 97.73, 82.82, 101.81, 83.71, 89.12, 83.78, 70.38, 88.51, 68.07, 70.14, "m", 82.8, 72.83, 94.97, 102.01, 72.5, 92.2, 110.51, 118.98, 79.59, 89.14, 111.57, 87.44, 73.61, "m")
+konten_kuantitas <- tibble(
+  kode_negara = daftar_kode_oecd,
+  negara = daftar_negara_oecd,
+  konten = rep("Kuantitas", 82),
+  rerata = as.numeric(replace(rerata_kuantitas, rerata_kuantitas == "m", NA)),
+  sd = as.numeric(replace(sd_kuantitas, sd_kuantitas == "m", NA))
+)
+
+rerata_ruang_bentuk <- c(485.6, 489.6, 489.6, 491.2, 404.5, 370, 375.2, 495.4, 493.3, 513, 485.5, 471.8, 473.9, 428.9, 469, 464.2, 474.5, 450.2, 471.2, 541, 536.6, 488.1, 471.9, 387.9, 485.5, 473.3, 469.3, 486.7, 471.7, 471.7, 491.5, 462.7, 482.7, 518.5, 442.1, 476.9, 454.1, 470.5, 375.8, 367.7, 393.3, 370.2, 444.3, 411.7, "m", 454.6, 423.8, 332.1, 328.4, 388.9, "m", 539.9, 367.2, 363.2, 348, 420.6, 357.3, 555.5, 416.1, 461.9, 408.7, 423.2, 408.6, 361.6, 384.4, 355.2, 340.8, "m", 382.7, 343.1, 404.1, 421.5, 383.2, 441.1, 570.7, 551.4, 391.5, 438.2, 423.1, 404.4, 364.6, "m")
+sd_ruang_bentuk <- c(104.33, 97.31, 99.38, 107.57, 83.45, 90.17, 78.64, 104.89, 87.68, 93.83, 95.33, 97.47, 97.84, 88.63, 98.91, 87.07, 81.66, 110.53, 104.66, 92.95, 113.58, 86.8, 95.71, 84.12, 101.86, 96.96, 96.32, 93.58, 98.79, 107.71, 96.05, 102.85, 99.08, 101.37, 96.85, 104.21, 94.58, 96.56, 93.83, 93.4, 100.45, 93.08, 87.85, 103.49, "m", 94.47, 102.92, 69.22, 79.67, 103.69, "m", 106.58, 90.42, 76.23, 83.47, 105.32, 79.99, 100.15, 83.69, 100.42, 91.71, 91.86, 91.97, 77.03, 90.54, 85.63, 84.68, "m", 95.69, 81.32, 100.43, 111.42, 75.58, 100.46, 108.6, 113.39, 92.9, 103.09, 118.13, 88.12, 86.25, "m")
+konten_ruang_bentuk <- tibble(
+  kode_negara = daftar_kode_oecd,
+  negara = daftar_negara_oecd,
+  konten = rep("Ruang dan Bentuk", 82),
+  rerata = as.numeric(replace(rerata_ruang_bentuk, rerata_ruang_bentuk == "m", NA)),
+  sd = as.numeric(replace(sd_ruang_bentuk, sd_ruang_bentuk == "m", NA))
+)
+
+rerata_ketidakpastian_data <- c(494, 485.4, 492.7, 500.3, 414.7, 384.6, 385.4, 483.2, 498.8, 502.8, 484.6, 477.3, 475, 434.6, 471.6, 459.8, 498.6, 456.2, 472.9, 540.1, 524, 478.1, 470.5, 390.6, 495.8, 486.5, 469.9, 488.7, 478, 456.1, 482.9, 477.8, 481.1, 502.3, 457.6, 498.6, 475.8, 473.7, 362.7, 375.4, 392.6, 381.4, 444.4, 413.4, "m", 463.1, 416.5, 336.8, 342.9, 382.9, "m", 541.8, 363.1, 381.3, 364.1, 416.5, 347.7, 551.3, 409.2, 473.4, 406.8, 421.6, 402.3, 362.6, 384.8, 366, 359, "m", 388.9, 358.2, 417.8, 426, 389.8, 434.9, 578.7, 546.1, 390.8, 436.3, 432.1, 408.8, 349, "m")
+sd_ketidakpastian_data <- c(112.45, 99.91, 103.37, 110.91, 84.44, 81.85, 76.02, 99.74, 88.81, 91.17, 102.04, 97.01, 100.61, 92.43, 95.44, 97.02, 90.53, 120.39, 98.51, 100.11, 114.81, 82.79, 92.2, 75.77, 117.59, 109.66, 108.35, 97.65, 93.39, 108.58, 95.31, 101.12, 108.89, 106.53, 95.2, 109.42, 104.17, 99.03, 94.93, 90.02, 92.02, 86.18, 86.18, 106.49, "m", 95.51, 113.18, 64.65, 67.23, 89.33, "m", 117.22, 73.43, 80.02, 70.33, 86.9, 72.77, 97.67, 80.07, 106.77, 82.26, 91.44, 85.68, 66.74, 92.33, 75.73, 73.45, "m", 83.72, 69.92, 98.01, 102.22, 69.54, 94.4, 114.69, 120.77, 82.62, 96.77, 115.28, 97.23, 73.44, "m")
+konten_ketidakpastian_data <- tibble(
+  kode_negara = daftar_kode_oecd,
+  negara = daftar_negara_oecd,
+  konten = rep("Ketidakpastian dan Data", 82),
+  rerata = as.numeric(replace(rerata_ketidakpastian_data, rerata_ketidakpastian_data == "m", NA)),
+  sd = as.numeric(replace(sd_ketidakpastian_data, sd_ketidakpastian_data == "m", NA))
+  )
+data_konten_mat <- rbind(
+  konten_ubah_hubungan,
+  konten_kuantitas,
+  konten_ruang_bentuk,
+  konten_ketidakpastian_data
+)
 
 # Antarmuka ----
 ui <- page_navbar(
@@ -274,7 +320,7 @@ ui <- page_navbar(
                            "Populasi setara" = "pop_besar",
                            "Negara-negara terpilih" = "pilih_negara"
                          ),
-                         selected = "asia_tenggara"
+                         selected = "pilih_negara"
       ),
       conditionalPanel(
         "input.banding_pros_kon.indexOf('pilih_negara') !== -1",
@@ -339,13 +385,25 @@ ui <- page_navbar(
            plotOutput("plot_nalar_banding")),
       card(card_header("Penalaran Matematis Siswa Indonesia"),
            plotOutput("plot_nalar_idn")),
-      card(),
-      card(),
+      card(card_header("Rerata Skor Tiap-Tiap Kategori Konten Matematika"),
+           plotOutput("plot_konten_banding")),
+      card(card_header("Skor Indonesia pada Tiap Kategori Konten"),
+           plotOutput("plot_konten_idn")),
       col_widths = c(8, 4, 8, 4)
     )
   ),
   ## Panel kesetaraan ----
-  nav_panel("Kesetaraan", "Page 3 contents"),
+  nav_panel("Kesetaraan",
+            layout_column_wrap(
+              width = 1/2,
+              height = 300,
+              card(),
+              layout_column_wrap(
+                width = 1,
+                heights_equal = "row",
+                card(), card()
+              )
+            )),
   ## Panel tren ----
   nav_panel("Tren", "Page 3 contents"),
   ## Panel informasi ----
@@ -1028,21 +1086,119 @@ server <- function(input, output) {
       geom_violin(fill = "gray95", color = "white") +
       geom_point(size = 3, alpha = .1) +
       geom_line(data = data_rerata,
-                aes(x = penalaran, y = rerata, group = negara),
-                linewidth = 2, color = "gray",
-                alpha = .5) +
+                aes(x = penalaran, y = rerata, group = negara,
+                    color = "Rerata"),
+                linewidth = 1,
+                linetype = "dashed") +
       geom_point(data = data_rerata,
                  aes(x = penalaran, y = rerata),
-                 size = 3, color = "gray") +
+                 size = 3) +
       geom_line(data = data_idn,
-                aes(x = penalaran, y = rerata, group = negara),
-                linewidth = 2, color = "orange",
-                alpha = .5) +
+                aes(x = penalaran, y = rerata, group = negara,
+                    color = "Indonesia"),
+                linewidth = 1,
+                alpha = .75) +
       geom_point(data = data_idn,
-                 aes(x = penalaran, y = rerata),
-                 size = 3, color = "orange") +
+                 aes(x = penalaran, y = rerata, color = "Indonesia"),
+                 size = 3) +
+      scale_color_manual(name = "",
+                         values = c("Indonesia" = "#d95f02",
+                                    "Rerata" = "black")) +
       scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
-      theme_bw()
+      theme_bw(base_size = 12) +
+      theme(legend.position = "bottom",
+            axis.title.x = element_blank()) +
+      labs(y = "Rerata")
+  })
+  ## plot_konten_banding ----
+  output$plot_konten_banding <- renderPlot({
+    banding_negara <- input$banding_negara_pros_kon
+    
+    # Fungsi untuk filter
+    gabung <- function(x) {
+      oecd <- c("OECD")
+      lima_atas <- c("SGP", "JPN", "KOR", "EST", "CHE")
+      asia_tenggara <- c("BRN", "MYS", "VNM", "SGP", "KHM", "THA", "PHL")
+      pop_besar <- c("USA", "MEX", "PHL", "BRA")
+      pilih_negara <- banding_negara
+      hasil <- c("IDN")
+      for (anggota in x) {
+        if (anggota == "oecd") {
+          hasil <- c(hasil, oecd)
+        } else if (anggota == "lima_atas") {
+          hasil <- c(hasil, lima_atas)
+        } else if (anggota == "asia_tenggara") {
+          hasil <- c(hasil, asia_tenggara)
+        } else if (anggota == "pop_besar") {
+          hasil <- c(hasil, pop_besar)
+        } else if (anggota == "pilih_negara") {
+          hasil <- c(hasil, banding_negara)
+        }
+      }
+      
+      return(hasil)
+    }
+    
+    # Memfilter data
+    data_filter <- gabung(input$banding_pros_kon)
+    data <- data_konten_mat %>%
+      select(kode_negara, negara, konten, rerata) %>% 
+      filter(kode_negara %in% data_filter) %>% 
+      drop_na()
+    data %>% 
+      mutate(konten = fct_reorder(konten, -rerata, .fun = "mean")) %>% 
+      ggplot(aes(x = konten, y = rerata, color = negara)) +
+      geom_line(aes(group = negara),
+                linewidth = 2, alpha = .5) +
+      geom_point(size = 2.5) +
+      theme_bw(base_size = 14) +
+      scale_color_brewer(palette = "Dark2", name = "Negara") +
+      theme(legend.position = "bottom",
+            axis.title.x = element_blank()) +
+      labs(y = "Rerata")
+  })
+  ## plot_konten_idn ----
+  output$plot_konten_idn <- renderPlot({
+    data <- data_konten_mat %>% 
+      select(kode_negara, negara,
+             konten, rerata) %>%
+      filter(kode_negara != "OECD") %>% 
+      drop_na()
+    data_idn <- data %>% 
+      filter(kode_negara == "IDN")
+    data_rerata <- data %>% 
+      group_by(konten) %>% 
+      summarise(rerata = mean(rerata)) %>% 
+      mutate(negara = rep("Rerata", 4))
+    data %>% 
+      mutate(konten = fct_reorder(konten, -rerata, .fun = "mean")) %>% 
+      ggplot(aes(x = konten, y = rerata)) +
+      geom_violin(fill = "gray95", color = "white") +
+      geom_point(size = 3, alpha = .1) +
+      geom_line(data = data_rerata,
+                aes(x = konten, y = rerata, group = negara,
+                    color = "Rerata"),
+                linewidth = 1,
+                linetype = "dashed") +
+      geom_point(data = data_rerata,
+                 aes(x = konten, y = rerata),
+                 size = 3) +
+      geom_line(data = data_idn,
+                aes(x = konten, y = rerata, group = negara,
+                    color = "Indonesia"),
+                linewidth = 1,
+                alpha = .75) +
+      geom_point(data = data_idn,
+                 aes(x = konten, y = rerata, color = "Indonesia"),
+                 size = 3) +
+      scale_color_manual(name = "",
+                         values = c("Indonesia" = "#d95f02",
+                                    "Rerata" = "black")) +
+      scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+      theme_bw(base_size = 12) +
+      theme(legend.position = "bottom",
+            axis.title.x = element_blank()) +
+      labs(y = "Rerata")
   })
 }
 
