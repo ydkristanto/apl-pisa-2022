@@ -380,16 +380,21 @@ ui <- page_navbar(
   ## Panel proses dan konten ----
   nav_panel(
     "Proses dan Konten",
-    layout_columns(
-      card(card_header("Rerata Skor Tiap-Tiap Kategori Penalaran Matematis"),
-           plotOutput("plot_nalar_banding")),
-      card(card_header("Penalaran Matematis Siswa Indonesia"),
-           plotOutput("plot_nalar_idn")),
-      card(card_header("Rerata Skor Tiap-Tiap Kategori Konten Matematika"),
-           plotOutput("plot_konten_banding")),
-      card(card_header("Skor Indonesia pada Tiap Kategori Konten"),
-           plotOutput("plot_konten_idn")),
-      col_widths = c(8, 4, 8, 4)
+    layout_column_wrap(
+      width = 1/2,
+      height = 300,
+      navset_card_underline(
+        nav_panel(title = "Penalaran", plotOutput("plot_nalar_banding")),
+        nav_panel(title = "Konten", plotOutput("plot_konten_banding"))
+      ),
+      layout_column_wrap(
+        width = 1,
+        heights_equal = "row",
+        card(card_header("Posisi Penalaran Matematis Siswa Indonesia"),
+             plotOutput("plot_nalar_idn")),
+        card(card_header("Posisi Skor Indonesia pada Tiap Kategori Konten"),
+             plotOutput("plot_konten_idn"))
+      )
     )
   ),
   ## Panel kesetaraan ----
@@ -1083,30 +1088,17 @@ server <- function(input, output) {
                                      "Menginterpretasi",
                                      "Menalar")) %>% 
       ggplot(aes(x = penalaran, y = rerata)) +
-      geom_violin(fill = "gray95", color = "white") +
+      geom_boxplot() +
       geom_point(size = 3, alpha = .1) +
-      geom_line(data = data_rerata,
-                aes(x = penalaran, y = rerata, group = negara,
-                    color = "Rerata"),
-                linewidth = 1,
-                linetype = "dashed") +
-      geom_point(data = data_rerata,
-                 aes(x = penalaran, y = rerata),
-                 size = 3) +
       geom_line(data = data_idn,
-                aes(x = penalaran, y = rerata, group = negara,
-                    color = "Indonesia"),
-                linewidth = 1,
+                aes(x = penalaran, y = rerata, group = negara),
+                linewidth = 1, color = "#d95f02",
                 alpha = .75) +
       geom_point(data = data_idn,
-                 aes(x = penalaran, y = rerata, color = "Indonesia"),
-                 size = 3) +
-      scale_color_manual(name = "",
-                         values = c("Indonesia" = "#d95f02",
-                                    "Rerata" = "black")) +
-      scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+                 aes(x = penalaran, y = rerata),
+                 size = 3, color = "#d95f02") +
       theme_bw(base_size = 12) +
-      theme(legend.position = "bottom",
+      theme(legend.position = "right",
             axis.title.x = element_blank()) +
       labs(y = "Rerata")
   })
@@ -1151,6 +1143,7 @@ server <- function(input, output) {
       geom_line(aes(group = negara),
                 linewidth = 2, alpha = .5) +
       geom_point(size = 2.5) +
+      scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
       theme_bw(base_size = 14) +
       scale_color_brewer(palette = "Dark2", name = "Negara") +
       theme(legend.position = "bottom",
@@ -1173,30 +1166,18 @@ server <- function(input, output) {
     data %>% 
       mutate(konten = fct_reorder(konten, -rerata, .fun = "mean")) %>% 
       ggplot(aes(x = konten, y = rerata)) +
-      geom_violin(fill = "gray95", color = "white") +
+      geom_boxplot() +
       geom_point(size = 3, alpha = .1) +
-      geom_line(data = data_rerata,
-                aes(x = konten, y = rerata, group = negara,
-                    color = "Rerata"),
-                linewidth = 1,
-                linetype = "dashed") +
-      geom_point(data = data_rerata,
-                 aes(x = konten, y = rerata),
-                 size = 3) +
       geom_line(data = data_idn,
-                aes(x = konten, y = rerata, group = negara,
-                    color = "Indonesia"),
-                linewidth = 1,
+                aes(x = konten, y = rerata, group = negara),
+                linewidth = 1, color = "#d95f02",
                 alpha = .75) +
       geom_point(data = data_idn,
-                 aes(x = konten, y = rerata, color = "Indonesia"),
-                 size = 3) +
-      scale_color_manual(name = "",
-                         values = c("Indonesia" = "#d95f02",
-                                    "Rerata" = "black")) +
+                 aes(x = konten, y = rerata),
+                 size = 3, color = "#d95f02") +
       scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
       theme_bw(base_size = 12) +
-      theme(legend.position = "bottom",
+      theme(legend.position = "right",
             axis.title.x = element_blank()) +
       labs(y = "Rerata")
   })
