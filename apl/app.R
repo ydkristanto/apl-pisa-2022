@@ -120,7 +120,7 @@ ui <- page_navbar(
           "Populasi setara" = "pop_besar",
           "Negara-negara terpilih" = "pilih_negara"
         ),
-        selected = "oecd"
+        selected = "asia_tenggara"
       ),
       conditionalPanel(
         "input.banding.indexOf('pilih_negara') !== -1",
@@ -138,9 +138,9 @@ ui <- page_navbar(
         )
       )
     ),
-    ## Sidebar kecemasan dan pola pikir ----
+    ## Sidebar pola pikir dan kecemasan ----
     conditionalPanel(
-      "input.nav === 'Pola Pikir'",
+      "input.nav === 'Pola Pikir dan Kecemasan'",
       radioButtons("cemas_pikir_grup",
         p("Bandingkan dengan:", style = "font-weight: bold;"),
         choices = c(
@@ -188,7 +188,7 @@ ui <- page_navbar(
   ),
   ## Panel pola pikir ----
   nav_panel(
-    "Pola Pikir",
+    "Pola Pikir dan Kecemasan",
     layout_columns(
       card(
         card_header("Pola Pikir dan Rerata Skor Literasi Matematika"),
@@ -286,9 +286,13 @@ server <- function(input, output) {
         scale_color_brewer(palette = "Dark2") +
         theme(
           axis.title.x = element_blank(),
-          legend.position = "none"
+          legend.position = "none",
+          plot.caption = element_text(color = "gray50", size = 9)
         ) +
-        labs(y = "Skor")
+        labs(
+          y = "Skor",
+          caption = "Catatan: Lima titik kecil merepresentasikan persentil 10, 25, 50 (median),\n75, dan 90. Titik yang lebih besar merupakan rerata."
+        )
     } else if (input$mapel == "baca") {
       data %>%
         filter(literasi == "Membaca") %>%
@@ -642,6 +646,184 @@ server <- function(input, output) {
         ) +
         labs(x = "Persentase") +
         coord_flip()
+    }
+  })
+  ## plot_lit_cemas_pikir ----
+  output$plot_lit_cemas_pikir <- renderPlot({
+    oecd <- c("OECD")
+    lima_atas <- c("SGP", "JPN", "KOR", "EST", "CHE")
+    asia_tenggara <- c("BRN", "MYS", "VNM", "SGP", "KHM", "THA", "PHL")
+    pop_besar <- c("USA", "MEX", "PHL", "BRA")
+    cemas_pikir_negara <- input$cemas_pikir_negara
+    # Mempersiapkan data
+    data <- lit_cemas_pikir %>%
+      select(kode_negara, negara, starts_with("mat_cemas_")) %>%
+      drop_na() %>%
+      pivot_longer(
+        cols = starts_with("mat_cemas_"),
+        names_to = "kategori",
+        values_to = "skor"
+      ) %>%
+      mutate(
+        kecemasan_mat = ifelse(
+          startsWith(kategori, "mat_cemas_rendah"),
+          "Kecemasan rendah", "Kecemasan tinggi"
+        ),
+        pola_pikir = ifelse(
+          endsWith(kategori, "tetap"),
+          "Tetap", "Tumbuh"
+        )
+      ) %>%
+      select(-kategori) %>%
+      relocate(skor, .after = last_col())
+    if (input$cemas_pikir_grup == "oecd") {
+      data %>%
+        filter(kode_negara %in% oecd) %>%
+        ggplot(aes(x = pola_pikir, y = skor)) +
+        geom_col(aes(color = pola_pikir),
+          position = "dodge", fill = "white",
+          width = .75
+        ) +
+        facet_grid(~kecemasan_mat) +
+        scale_color_brewer(
+          palette = "Dark2",
+          direction = -1
+        ) +
+        theme_bw(base_size = 14) +
+        theme(
+          legend.position = "none",
+          plot.caption = element_text(
+            color = "gray50",
+            size = 9
+          )
+        ) +
+        labs(
+          y = "Rerata\nliterasi matematika",
+          x = "Pola pikir",
+          caption = "*Data hanya dari negara-negara OECD.\nIndonesia tidak memiliki data tentang kecemasan matematika."
+        )
+    } else if (input$cemas_pikir_grup == "lima_atas") {
+      data %>%
+        filter(kode_negara %in% lima_atas) %>%
+        group_by(kecemasan_mat, pola_pikir) %>%
+        summarise(skor = mean(skor)) %>%
+        ggplot(aes(x = pola_pikir, y = skor)) +
+        geom_col(aes(color = pola_pikir),
+          position = "dodge", fill = "white"
+        ) +
+        facet_grid(~kecemasan_mat) +
+        scale_color_brewer(
+          palette = "Dark2",
+          direction = -1
+        ) +
+        theme_bw(base_size = 14) +
+        theme(
+          legend.position = "none",
+          plot.caption = element_text(
+            color = "gray50",
+            size = 9
+          )
+        ) +
+        labs(
+          y = "Rerata\nliterasi matematika",
+          x = "Pola pikir",
+          caption = "*Data hanya dari negara-negara OECD lima teratas.\nIndonesia tidak memiliki data tentang kecemasan matematika."
+        )
+    } else if (input$cemas_pikir_grup == "asia_tenggara") {
+      data %>%
+        filter(kode_negara %in% asia_tenggara) %>%
+        group_by(kecemasan_mat, pola_pikir) %>%
+        summarise(skor = mean(skor)) %>%
+        ggplot(aes(x = pola_pikir, y = skor)) +
+        geom_col(aes(color = pola_pikir),
+          position = "dodge", fill = "white"
+        ) +
+        facet_grid(~kecemasan_mat) +
+        scale_color_brewer(
+          palette = "Dark2",
+          direction = -1
+        ) +
+        theme_bw(base_size = 14) +
+        theme(
+          legend.position = "none",
+          plot.caption = element_text(
+            color = "gray50",
+            size = 9
+          )
+        ) +
+        labs(
+          y = "Rerata\nliterasi matematika",
+          x = "Pola pikir",
+          caption = "*Data hanya dari Brunei Darussalam, Malaysia, dan Singapura.\nIndonesia tidak memiliki data tentang kecemasan matematika."
+        )
+    } else if (input$cemas_pikir_grup == "pop_besar") {
+      data %>%
+        filter(kode_negara %in% pop_besar) %>%
+        group_by(kecemasan_mat, pola_pikir) %>%
+        summarise(skor = mean(skor)) %>%
+        ggplot(aes(x = pola_pikir, y = skor)) +
+        geom_col(aes(color = pola_pikir),
+          position = "dodge", fill = "white"
+        ) +
+        facet_grid(~kecemasan_mat) +
+        scale_color_brewer(
+          palette = "Dark2",
+          direction = -1
+        ) +
+        theme_bw(base_size = 14) +
+        theme(
+          legend.position = "none",
+          plot.caption = element_text(
+            color = "gray50",
+            size = 9
+          )
+        ) +
+        labs(
+          y = "Rerata\nliterasi matematika",
+          x = "Pola pikir",
+          caption = "*Data hanya dari Amerika Serikat, Brazil, dan Meksiko.\nIndonesia tidak memiliki data tentang kecemasan matematika."
+        )
+    } else {
+      if (length(cemas_pikir_negara) == 0) {
+        ggplot(
+          data = data.frame(x = c(0, 10), y = c(0, 10)),
+          aes(x = x, y = y)
+        ) +
+          geom_label(aes(x = 5, y = 5, label = "Silakan pilih negara-negaranya!")) +
+          theme_bw(base_size = 14) +
+          theme(
+            axis.title = element_blank(),
+            axis.text = element_blank(),
+            axis.ticks = element_blank()
+          )
+      } else {
+        data %>%
+          filter(kode_negara %in% cemas_pikir_negara) %>%
+          group_by(kecemasan_mat, pola_pikir) %>%
+          summarise(skor = mean(skor)) %>%
+          ggplot(aes(x = pola_pikir, y = skor)) +
+          geom_col(aes(color = pola_pikir),
+            position = "dodge", fill = "white"
+          ) +
+          facet_grid(~kecemasan_mat) +
+          scale_color_brewer(
+            palette = "Dark2",
+            direction = -1
+          ) +
+          theme_bw(base_size = 14) +
+          theme(
+            legend.position = "none",
+            plot.caption = element_text(
+              color = "gray50",
+              size = 9
+            )
+          ) +
+          labs(
+            y = "Rerata\nliterasi matematika",
+            x = "Pola pikir",
+            caption = "*Data hanya dari negara-negara yang terpilih.\nIndonesia tidak memiliki data tentang kecemasan matematika."
+          )
+      }
     }
   })
 }
