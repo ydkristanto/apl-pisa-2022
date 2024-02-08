@@ -4,7 +4,7 @@ library(tidyverse)
 library(bslib)
 
 # Data ----
-# Data negara terurut ----
+## Data negara terurut ----
 daftar_kode_urut <- c("MAR", "ARG", "BRA", "CHL", "COL", "CRI", "PRY", "PER", "URY", "USA", "SLV", "GTM", "JAM", "CAN", "MEX", "PAN", "DOM", "SAU", "AZE", "BRN", "PHL", "HKG", "IDN", "ISR", "JPN", "KHM", "KAZ", "KOR", "MAC", "MYS", "MNG", "PSE", "QAT", "SGP", "THA", "TWN", "TUR", "ARE", "UZB", "VNM", "JOR", "ALB", "AUT", "NLD", "BEL", "GBR", "BGR", "DNK", "EST", "FIN", "GEO", "HUN", "IRL", "ISL", "ITA", "DEU", "XKK", "HRV", "LVA", "LTU", "MKD", "MLT", "MDA", "MNE", "NOR", "FRA", "POL", "PRT", "CZE", "ROU", "SRB", "CYP", "SVN", "SVK", "ESP", "SWE", "CHE", "UKR", "GRC", "AUS", "NZL")
 daftar_negara_urut <- c("Maroko", "Argentina", "Brazil", "Chili", "Kolombia", "Kosta Rika", "Paraguay", "Peru", "Uruguay", "Amerika Serikat", "El Salvador", "Guatemala", "Jamaika", "Kanada", "Meksiko", "Panama", "Republik Dominika", "Arab Saudi", "Azerbaijan", "Brunei Darussalam", "Filipina", "Hongkong", "Indonesia", "Israel", "Jepang", "Kamboja", "Kazakstan", "Korea", "Makau", "Malaysia", "Mongolia", "Palestina", "Qatar", "Singapura", "Thailand", "Tionghoa Taipei", "Turki", "Uni Emirat Arab", "Uzbekistan", "Vietnam", "Yordania", "Albania", "Austria", "Belanda", "Belgia", "Britania Raya", "Bulgaria", "Denmark", "Estonia", "Finlandia", "Georgia", "Hungaria", "Irlandia", "Islandia", "Italia", "Jerman", "Kosovo", "Kroasia", "Latvia", "Lithuania", "Makedonia Utara", "Malta", "Moldova", "Montenegro", "Norwegia", "Perancis", "Polandia", "Portugal", "Republik Ceko", "Rumania", "Serbia", "Siprus", "Slovenia", "Slowakia", "Spanyol", "Swedia", "Swiss", "Ukraina", "Yunani", "Australia", "Selandia Baru")
 daftar_benua_urut <- c(
@@ -633,9 +633,15 @@ ui <- page_navbar(
       uiOutput("kotak_peringkat"),
       uiOutput("kotak_rerata"),
       uiOutput("kotak_sd"),
-      card(
-        card_header(textOutput("teks_mapel")),
-        plotOutput("plot_literasi")
+      navset_card_underline(
+        nav_panel(
+          title = "Distribusi",
+          plotOutput("plot_literasi")
+        ),
+        nav_panel(
+          title = "Variasi",
+          plotOutput("plot_variasi")
+        )
       ),
       col_widths = c(4, 4, 4, 12)
     )
@@ -759,27 +765,32 @@ ui <- page_navbar(
     layout_column_wrap(
       width = 1 / 2,
       navset_card_underline(
+        ### Tentang ----
         nav_panel(
           title = "Tentang",
           p("Dasbor ini ditujukan sebagai alat untuk mengeksplorasi data PISA 2022. Misalnya, Anda dapat mengeksplorasi rerata skor dan distribusi skor literasi siswa Indonesia dan membandingkannya dengan negara-negara lain. Lebih lanjut, Anda juga dapat melihat bagaimana skor literasi matematikanya pada tiap-tiap kategori penalaran matematis dan kontennya."),
           p("Tak hanya itu, Anda juga dapat melihat variabel-variabel lain dalam data PISA. Misalnya, Anda dapat melihat bagaimana hubungan antara status sosial ekonomi siswa dengan kemampuan literasinya. Variabel-variabel kecemasan matematika dan pola pikir siswa juga menarik untuk diselidiki. Selamat bereksplorasi!")
         ),
         nav_panel(
+          ### Alat ----
           title = "Alat",
           p("Dasbor ini dikembangkan dengan menggunakan bahasa pemrogram", a("R", href = "https://www.R-project.org/", target = "_blank"), "dan paket", a("Shiny.", href = "https://CRAN.R-project.org/package=shiny", target = "_blank"), "Paket", a("shinylive", href = "https://posit-dev.github.io/r-shinylive/", target = "_blank"), "digunakan untuk mengekspor aplikasi ini agar dapat dijalankan di peramban web tanpa peladen R yang terpisah. Tata letak dasbor ini diatur dengan menggunakan ", a("bslib.", href = "https://CRAN.R-project.org/package=bslib", target = "_blank"))
         ),
         nav_panel(
+          ### Pengembang ----
           title = "Pengembang",
           p("Pengembang dan pemelihara aplikasi ini adalah", a("Yosep Dwi Kristanto,", href = "https://people.usd.ac.id/~ydkristanto/", target = "_blank"), "seorang dosen dan peneliti di program studi", a("Pendidikan Matematika,", href = "https://usd.ac.id/s1pmat", target = "_blank"), a("Universitas Sanata Dharma,", href = "https://www.usd.ac.id/", target = "_blank"), "Yogyakarta.")
         ),
         nav_panel(
+          ### Kode Sumber ----
           title = "Kode Sumber",
           p("Kode sumber aplikasi ini tersedia di", a("repositori Github.", href = "https://github.com/ydkristanto/apl-pisa-2022", target = "_blank"), "Jika Anda ingin melaporkan masalah atau meminta fitur tambahan terhadap aplikasi ini, silakan", a("buat sebuah isu", href = "https://github.com/ydkristanto/apl-pisa-2022/issues", target = "_blank"), "atau lebih baik lagi", a("minta penarikan", href = "https://github.com/ydkristanto/apl-pisa-2022/pulls", target = "_blank"), "di repositori tersebut.")
         )
       ),
+      ### Sumber Data ----
       card(
         card_header("Sumber Data"),
-        p("Semua grafik yang disajikan dalam dasbor ini datanya bersumber dari ringkasan statistik PISA 2022. Data tersebut antara lain adalah sebagai berikut."),
+        p("Semua grafik yang disajikan dalam dasbor ini datanya bersumber dari ringkasan statistik PISA 2022 dalam ", a(tags$span("PISA 2022 Results (Volume I): The State of Learning and Equity in Education.", style = "font-style: italic;"), href = "https://doi.org/10.1787/53f23881-en", target = "_blank"), " Data tersebut antara lain adalah sebagai berikut."),
         tags$ul(
           tags$li(a("Tabel I.B1.2.", href = "https://www.oecd-ilibrary.org/sites/bc9c7189-en/index.html?itemId=/content/component/bc9c7189-en#tablegrp-d1e18403-e6cec34019", target = "_blank")),
           tags$li(a("Tabel I.B1.3.", href = "https://www.oecd-ilibrary.org/sites/bc9c7189-en/index.html?itemId=/content/component/bc9c7189-en#tablegrp-d1e18672-e6cec34019", target = "_blank")),
@@ -855,7 +866,6 @@ server <- function(input, output) {
   ## Plot literasi ----
   output$plot_literasi <- renderPlot({
     banding_negara <- input$banding_negara
-
     # Fungsi untuk filter
     gabung <- function(x) {
       oecd <- c("OECD")
@@ -885,120 +895,64 @@ server <- function(input, output) {
     data_filter <- gabung(input$banding)
     data <- data_literasi %>%
       filter(kode_negara %in% data_filter)
-
-    if (input$mapel == "mat") {
-      data %>%
-        filter(literasi == "Matematika") %>%
-        mutate(idn = ifelse(kode_negara == "IDN", TRUE, FALSE)) %>%
-        pivot_longer(
-          cols = starts_with("pstl_") & !ends_with("_se"),
-          names_to = "pstl",
-          values_to = "skor"
-        ) %>%
-        mutate(negara = fct_reorder(negara, -rerata)) %>%
-        ggplot(aes(x = negara)) +
-        geom_line(aes(y = skor, group = negara, color = idn),
-          linewidth = 1.5
-        ) +
-        geom_point(aes(y = skor), size = 2) +
-        geom_point(aes(y = rerata), size = 3.5) +
-        theme_bw(base_size = 14) +
-        scale_color_brewer(palette = "Dark2") +
-        theme(
-          axis.title.x = element_blank(),
-          legend.position = "none",
-          plot.caption = element_text(color = "gray50", size = 9)
-        ) +
-        labs(
-          y = "Skor",
-          caption = "Catatan: Lima titik kecil merepresentasikan persentil 10, 25, 50 (median),\n75, dan 90. Titik yang lebih besar merupakan rerata."
-        )
-    } else if (input$mapel == "baca") {
-      data %>%
-        filter(literasi == "Membaca") %>%
-        mutate(idn = ifelse(kode_negara == "IDN", TRUE, FALSE)) %>%
-        pivot_longer(
-          cols = starts_with("pstl_") & !ends_with("_se"),
-          names_to = "pstl",
-          values_to = "skor"
-        ) %>%
-        mutate(negara = fct_reorder(negara, -rerata)) %>%
-        ggplot(aes(x = negara)) +
-        geom_line(aes(y = skor, group = negara, color = idn),
-          linewidth = 1.5
-        ) +
-        geom_point(aes(y = skor), size = 2) +
-        geom_point(aes(y = rerata), size = 3.5) +
-        theme_bw(base_size = 14) +
-        scale_color_brewer(palette = "Dark2") +
-        theme(
-          axis.title.x = element_blank(),
-          legend.position = "none",
-          plot.caption = element_text(color = "gray50", size = 9)
-        ) +
-        labs(
-          y = "Skor",
-          caption = "Catatan: Lima titik kecil merepresentasikan persentil 10, 25, 50 (median),\n75, dan 90. Titik yang lebih besar merupakan rerata."
-        )
-    } else {
-      data %>%
-        filter(literasi == "Sains") %>%
-        mutate(idn = ifelse(kode_negara == "IDN", TRUE, FALSE)) %>%
-        pivot_longer(
-          cols = starts_with("pstl_") & !ends_with("_se"),
-          names_to = "pstl",
-          values_to = "skor"
-        ) %>%
-        mutate(negara = fct_reorder(negara, -rerata)) %>%
-        ggplot(aes(x = negara)) +
-        geom_line(aes(y = skor, group = negara, color = idn),
-          linewidth = 1.5
-        ) +
-        geom_point(aes(y = skor), size = 2) +
-        geom_point(aes(y = rerata), size = 3.5) +
-        theme_bw(base_size = 14) +
-        scale_color_brewer(palette = "Dark2") +
-        theme(
-          axis.title.x = element_blank(),
-          legend.position = "none",
-          plot.caption = element_text(color = "gray50", size = 9)
-        ) +
-        labs(
-          y = "Skor",
-          caption = "Catatan: Lima titik kecil merepresentasikan persentil 10, 25, 50 (median),\n75, dan 90. Titik yang lebih besar merupakan rerata."
-        )
-    }
+    # Teks mapel
+    mapel <- input$mapel
+    teks_mapel <- ifelse(mapel == "mat", "Matematika",
+      ifelse(mapel == "baca", "Membaca",
+        "Sains"
+      )
+    )
+    # Plot
+    data %>%
+      filter(literasi == teks_mapel) %>%
+      mutate(idn = ifelse(kode_negara == "IDN", TRUE, FALSE)) %>%
+      pivot_longer(
+        cols = starts_with("pstl_") & !ends_with("_se"),
+        names_to = "pstl",
+        values_to = "skor"
+      ) %>%
+      mutate(negara = fct_reorder(negara, -rerata)) %>%
+      ggplot(aes(x = negara)) +
+      geom_line(aes(y = skor, group = negara, color = idn),
+        linewidth = 1.5
+      ) +
+      geom_point(aes(y = skor), size = 2) +
+      geom_point(aes(y = rerata), size = 3.5) +
+      theme_bw(base_size = 14) +
+      scale_color_brewer(palette = "Dark2") +
+      theme(
+        axis.title.x = element_blank(),
+        legend.position = "none",
+        plot.caption = element_text(color = "gray50", size = 9)
+      ) +
+      labs(
+        y = paste0("Skor Literasi ", teks_mapel),
+        caption = "Catatan: Lima titik kecil merepresentasikan persentil 10, 25, 50 (median),\n75, dan 90. Titik yang lebih besar merupakan rerata."
+      )
   })
 
   ## Kotak peringkat ----
   output$kotak_peringkat <- renderUI({
+    # Mempersiapkan data
     data <- data_literasi %>%
       filter(negara != "OECD") %>%
       group_by(literasi) %>%
       mutate(peringkat = as.integer(rank(-rerata, ties.method = "average")))
-    peringkat_mat <- data %>%
-      filter(negara == "Indonesia" & literasi == "Matematika")
-    peringkat_baca <- data %>%
-      filter(negara == "Indonesia" & literasi == "Membaca")
-    peringkat_sains <- data %>%
-      filter(negara == "Indonesia" & literasi == "Sains")
-
-    if (input$mapel == "mat") {
-      value_box("Peringkat",
-        peringkat_mat$peringkat,
-        theme = "primary"
+    # Menentukan peringkat
+    mapel <- input$mapel
+    teks_mapel <- ifelse(mapel == "mat", "Matematika",
+      ifelse(mapel == "baca", "Membaca",
+        "Sains"
       )
-    } else if (input$mapel == "baca") {
-      value_box("Peringkat",
-        peringkat_baca$peringkat,
-        theme = "primary"
-      )
-    } else {
-      value_box("Peringkat",
-        peringkat_sains$peringkat,
-        theme = "primary"
-      )
-    }
+    )
+    peringkat <- data %>%
+      filter(negara == "Indonesia" & literasi == teks_mapel)
+    # Mendefinisikan kotak nilai
+    value_box(
+      title = "Peringkat",
+      value = peringkat$peringkat,
+      theme = "primary"
+    )
   })
 
   ## Kotak rerata ----
@@ -1056,18 +1010,95 @@ server <- function(input, output) {
       )
     }
   })
+  ## plot_variasi ----
+  output$plot_variasi <- renderPlot({
+    # Filter negara-negara terpilih
+    banding_negara <- input$banding_negara
+    gabung <- function(x) {
+      oecd <- c("OECD")
+      lima_atas <- c("SGP", "JPN", "KOR", "EST", "CHE")
+      asia_tenggara <- c("BRN", "MYS", "VNM", "SGP", "KHM", "THA", "PHL")
+      pop_besar <- c("USA", "MEX", "PHL", "BRA")
+      pilih_negara <- banding_negara
+      hasil <- c("IDN")
+      for (anggota in x) {
+        if (anggota == "oecd") {
+          hasil <- c(hasil, oecd)
+        } else if (anggota == "lima_atas") {
+          hasil <- c(hasil, lima_atas)
+        } else if (anggota == "asia_tenggara") {
+          hasil <- c(hasil, asia_tenggara)
+        } else if (anggota == "pop_besar") {
+          hasil <- c(hasil, pop_besar)
+        } else if (anggota == "pilih_negara") {
+          hasil <- c(hasil, banding_negara)
+        }
+      }
 
-  ## Teks literasi mata pelajaran ----
-  output$teks_mapel <- renderText({
-    if (input$mapel == "mat") {
-      "Literasi Matematika"
-    } else if (input$mapel == "baca") {
-      "Literasi Membaca"
-    } else {
-      "Literasi Sains"
+      return(hasil)
     }
+    data_filter <- gabung(input$banding)
+    # Mempersiapkan data
+    mapel <- input$mapel
+    teks_mapel <- ifelse(mapel == "mat", "Matematika",
+      ifelse(mapel == "baca", "Membaca",
+        "Sains"
+      )
+    )
+    data <- data_literasi %>%
+      select(kode_negara, negara, literasi, rerata, sd) %>%
+      filter(
+        negara != "OECD",
+        literasi == teks_mapel
+      )
+    data_sorot <- data %>%
+      select(kode_negara, negara, literasi, rerata, sd) %>%
+      filter(kode_negara %in% data_filter)
+    # Rerata OECD
+    alfa_oecd <- ifelse("OECD" %in% data_filter, 1, 0)
+    data_oecd <- data_literasi %>%
+      select(literasi, rerata, sd) %>%
+      filter(
+        literasi == teks_mapel,
+        negara == "OECD"
+      )
+    x_inter <- as.numeric(data_oecd$rerata)
+    y_inter <- as.numeric(data_oecd$sd)
+    # Plot
+    data %>%
+      ggplot(aes(x = rerata, y = sd)) +
+      geom_smooth(
+        method = "lm", formula = y ~ x + I(x^2),
+        color = "gray50", alpha = .1
+      ) +
+      geom_vline(
+        xintercept = x_inter, alpha = alfa_oecd,
+        linetype = "dashed"
+      ) +
+      geom_hline(
+        yintercept = y_inter, alpha = alfa_oecd,
+        linetype = "dashed"
+      ) +
+      geom_point(
+        size = 3, color = "#1b9e77",
+        alpha = .6
+      ) +
+      geom_point(
+        data = data_sorot,
+        aes(x = rerata, y = sd),
+        size = 3, color = "#d95f02"
+      ) +
+      geom_label(
+        data = data_sorot,
+        aes(x = rerata, y = sd, label = negara),
+        color = "#d95f02", nudge_y = 3
+      ) +
+      theme_bw(base_size = 14) +
+      labs(
+        x = paste0("Rerata Skor Literasi ", teks_mapel),
+        y = paste0("Simpangan Baku Skor\nLiterasi ", teks_mapel)
+      )
   })
-
   ## plot_pikir_mat ----
   output$plot_pikir_mat <- renderPlot({
     oecd <- c("OECD")
