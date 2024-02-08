@@ -1,5 +1,3 @@
-library(shinylive)
-
 #' Mengekspor aplikasi Shiny dalam folder "apl"
 #' ke folder "docs".
 shinylive::export(appdir = "apl",

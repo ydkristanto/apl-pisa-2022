@@ -4,6 +4,20 @@ library(tidyverse)
 library(bslib)
 
 # Data ----
+# Data negara terurut ----
+daftar_kode_urut <- c("MAR", "ARG", "BRA", "CHL", "COL", "CRI", "PRY", "PER", "URY", "USA", "SLV", "GTM", "JAM", "CAN", "MEX", "PAN", "DOM", "SAU", "AZE", "BRN", "PHL", "HKG", "IDN", "ISR", "JPN", "KHM", "KAZ", "KOR", "MAC", "MYS", "MNG", "PSE", "QAT", "SGP", "THA", "TWN", "TUR", "ARE", "UZB", "VNM", "JOR", "ALB", "AUT", "NLD", "BEL", "GBR", "BGR", "DNK", "EST", "FIN", "GEO", "HUN", "IRL", "ISL", "ITA", "DEU", "XKK", "HRV", "LVA", "LTU", "MKD", "MLT", "MDA", "MNE", "NOR", "FRA", "POL", "PRT", "CZE", "ROU", "SRB", "CYP", "SVN", "SVK", "ESP", "SWE", "CHE", "UKR", "GRC", "AUS", "NZL")
+daftar_negara_urut <- c("Maroko", "Argentina", "Brazil", "Chili", "Kolombia", "Kosta Rika", "Paraguay", "Peru", "Uruguay", "Amerika Serikat", "El Salvador", "Guatemala", "Jamaika", "Kanada", "Meksiko", "Panama", "Republik Dominika", "Arab Saudi", "Azerbaijan", "Brunei Darussalam", "Filipina", "Hongkong", "Indonesia", "Israel", "Jepang", "Kamboja", "Kazakstan", "Korea", "Makau", "Malaysia", "Mongolia", "Palestina", "Qatar", "Singapura", "Thailand", "Tionghoa Taipei", "Turki", "Uni Emirat Arab", "Uzbekistan", "Vietnam", "Yordania", "Albania", "Austria", "Belanda", "Belgia", "Britania Raya", "Bulgaria", "Denmark", "Estonia", "Finlandia", "Georgia", "Hungaria", "Irlandia", "Islandia", "Italia", "Jerman", "Kosovo", "Kroasia", "Latvia", "Lithuania", "Makedonia Utara", "Malta", "Moldova", "Montenegro", "Norwegia", "Perancis", "Polandia", "Portugal", "Republik Ceko", "Rumania", "Serbia", "Siprus", "Slovenia", "Slowakia", "Spanyol", "Swedia", "Swiss", "Ukraina", "Yunani", "Australia", "Selandia Baru")
+daftar_benua_urut <- c(
+  "Afrika", rep("Amerika Selatan", 8),
+  rep("Amerika Utara", 8), rep("Asia", 24),
+  rep("Eropa", 38), rep("Oseania", 2)
+)
+pilihan_negara_benua <- tibble(
+  kode = daftar_kode_urut,
+  negara = daftar_negara_urut,
+  benua = daftar_benua_urut
+)
+
 ## Data performa ----
 kode_negara <- rep(c("AUS", "AUT", "BEL", "CAN", "CHL", "COL", "CRI", "CZE", "DNK", "EST", "FIN", "FRA", "DEU", "GRC", "HUN", "ISL", "IRL", "ISR", "ITA", "JPN", "KOR", "LVA", "LTU", "MEX", "NLD", "NZL", "NOR", "POL", "PRT", "SVK", "SVN", "ESP", "SWE", "CHE", "TUR", "GBR", "USA", "OECD", "ALB", "ARG", "AZE", "BRA", "BRN", "BGR", "KHM", "HRV", "CYP", "DOM", "SLV", "GEO", "GTM", "HKG", "IDN", "JAM", "JOR", "KAZ", "XKK", "MAC", "MYS", "MLT", "MDA", "MNG", "MNE", "MAR", "MKD", "PSE", "PAN", "PRY", "PER", "PHL", "QAT", "ROU", "SAU", "SRB", "SGP", "TWN", "THA", "UKR", "ARE", "URY", "UZB", "VNM"), 3)
 daftar_kode_oecd <- c("AUS", "AUT", "BEL", "CAN", "CHL", "COL", "CRI", "CZE", "DNK", "EST", "FIN", "FRA", "DEU", "GRC", "HUN", "ISL", "IRL", "ISR", "ITA", "JPN", "KOR", "LVA", "LTU", "MEX", "NLD", "NZL", "NOR", "POL", "PRT", "SVK", "SVN", "ESP", "SWE", "CHE", "TUR", "GBR", "USA", "OECD", "ALB", "ARG", "AZE", "BRA", "BRN", "BGR", "KHM", "HRV", "CYP", "DOM", "SLV", "GEO", "GTM", "HKG", "IDN", "JAM", "JOR", "KAZ", "XKK", "MAC", "MYS", "MLT", "MDA", "MNG", "MNE", "MAR", "MKD", "PSE", "PAN", "PRY", "PER", "PHL", "QAT", "ROU", "SAU", "SRB", "SGP", "TWN", "THA", "UKR", "ARE", "URY", "UZB", "VNM")
@@ -449,9 +463,9 @@ ui <- page_navbar(
   id = "nav",
   ## Sidebar ----
   sidebar = sidebar(
-    ## Sidebar hasil belajar ----
+    ## Sidebar literasi ----
     conditionalPanel(
-      "input.nav === 'Hasil Belajar'",
+      "input.nav === 'Literasi'",
       selectInput("mapel",
         p("Literasi:", style = "font-weight: bold;"),
         choices = c(
@@ -480,10 +494,7 @@ ui <- page_navbar(
           p("Negara-negara terpilih",
             style = "font-weight: bold;"
           ),
-          choices = setNames(
-            daftar_kode,
-            daftar_negara
-          ),
+          choices = NULL,
           multiple = TRUE,
           selectize = TRUE
         )
@@ -508,10 +519,7 @@ ui <- page_navbar(
         hr(),
         selectInput("cemas_pikir_negara",
           p("Pilih negara:", style = "font-weight: bold;"),
-          choices = setNames(
-            daftar_kode,
-            daftar_negara
-          ),
+          choices = NULL,
           multiple = TRUE,
           selectize = TRUE
         )
@@ -606,7 +614,7 @@ ui <- page_navbar(
         )
       )
     ),
-    ## Sidebar tren ----
+    ## Sidebar informasi ----
     conditionalPanel(
       "input.nav === 'Informasi'",
       h4("Deskripsi",
@@ -618,9 +626,9 @@ ui <- page_navbar(
       p("Copyright © 2024 Yosep Dwi Kristanto")
     )
   ),
-  ## Panel hasil belajar ----
+  ## Panel literasi ----
   nav_panel(
-    "Hasil Belajar",
+    "Literasi",
     layout_columns(
       uiOutput("kotak_peringkat"),
       uiOutput("kotak_rerata"),
@@ -785,6 +793,65 @@ ui <- page_navbar(
 
 # Peladen ----
 server <- function(input, output) {
+  # Negara berdasarkan benua
+  afrika <- pilihan_negara_benua %>%
+    filter(benua == "Afrika")
+  amerika_selatan <- pilihan_negara_benua %>%
+    filter(benua == "Amerika Selatan")
+  amerika_utara <- pilihan_negara_benua %>%
+    filter(benua == "Amerika Utara")
+  asia <- pilihan_negara_benua %>%
+    filter(benua == "Asia")
+  eropa <- pilihan_negara_benua %>%
+    filter(benua == "Eropa")
+  oseania <- pilihan_negara_benua %>%
+    filter(benua == "Oseania")
+  # Daftar pilihan negara
+  pilihan_input_negara <- list(
+    Afrika = as.list(setNames(afrika$kode, afrika$negara)),
+    `Amerika Selatan` = as.list(setNames(
+      amerika_selatan$kode,
+      amerika_selatan$negara
+    )),
+    `Amerika Utara` = as.list(setNames(
+      amerika_utara$kode,
+      amerika_utara$negara
+    )),
+    Asia = as.list(setNames(asia$kode, asia$negara)),
+    Eropa = as.list(setNames(eropa$kode, eropa$negara)),
+    Oseania = as.list(setNames(oseania$kode, oseania$negara))
+  )
+  ## Pilihan banding_negara ----
+  updateSelectizeInput(getDefaultReactiveDomain(),
+    "banding_negara",
+    choices = pilihan_input_negara
+  )
+  updateSelectizeInput(getDefaultReactiveDomain(),
+    "cemas_pikir_negara",
+    choices = pilihan_input_negara
+  )
+  updateSelectizeInput(getDefaultReactiveDomain(),
+    "banding_negara_pros_kon",
+    choices = pilihan_input_negara
+  )
+  updateSelectizeInput(getDefaultReactiveDomain(),
+    "negara_setara",
+    choices = pilihan_input_negara
+  )
+  updateSelectizeInput(getDefaultReactiveDomain(),
+    "banding_negara_tren",
+    choices = pilihan_input_negara
+  )
+
+  output$values <- renderPrint({
+    list(
+      banding_negara = input$banding_negara,
+      cemas_pikir_negara = input$cemas_pikir_negara,
+      banding_negara_pros_kon = input$banding_negara_pros_kon,
+      negara_setara = input$negara_setara,
+      banding_negara_tren = input$banding_negara_tren
+    )
+  })
   ## Plot literasi ----
   output$plot_literasi <- renderPlot({
     banding_negara <- input$banding_negara
