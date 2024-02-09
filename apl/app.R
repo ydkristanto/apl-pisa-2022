@@ -1026,37 +1026,26 @@ server <- function(input, output) {
   ## plot_variasi ----
   output$plot_variasi <- renderPlot({
     # Filter negara-negara terpilih
+    banding <- input$banding
     banding_negara <- input$banding_negara
-    gabung <- function(x) {
-      oecd <- c("OECD")
-      lima_atas <- c("SGP", "JPN", "KOR", "EST", "CHE")
-      asia_tenggara <- c("BRN", "MYS", "VNM", "SGP", "KHM", "THA", "PHL")
-      pop_besar <- c("USA", "MEX", "PHL", "BRA")
-      pilih_negara <- banding_negara
-      hasil <- c("IDN")
-      for (anggota in x) {
-        if (anggota == "oecd") {
-          hasil <- c(hasil, oecd)
-        } else if (anggota == "lima_atas") {
-          hasil <- c(hasil, lima_atas)
-        } else if (anggota == "asia_tenggara") {
-          hasil <- c(hasil, asia_tenggara)
-        } else if (anggota == "pop_besar") {
-          hasil <- c(hasil, pop_besar)
-        } else if (anggota == "pilih_negara") {
-          hasil <- c(hasil, banding_negara)
-        }
-      }
-
-      return(hasil)
-    }
-    data_filter <- gabung(input$banding)
+    oecd_literasi <- input$oecd_literasi
+    data_filter <- gabung(banding, banding_negara)
     # Mempersiapkan data
     mapel <- input$mapel
     teks_mapel <- ifelse(mapel == "mat", "Matematika",
       ifelse(mapel == "baca", "Membaca",
         "Sains"
       )
+    )
+    data_oecd <- data_literasi %>% 
+      filter(
+        negara == "OECD",
+        literasi == teks_mapel
+      )
+    alfa_oecd <- ifelse(
+      oecd_literasi == TRUE,
+      1,
+      0
     )
     data <- data_literasi %>%
       select(kode_negara, negara, literasi, rerata, sd) %>%
@@ -1067,16 +1056,6 @@ server <- function(input, output) {
     data_sorot <- data %>%
       select(kode_negara, negara, literasi, rerata, sd) %>%
       filter(kode_negara %in% data_filter)
-    # Rerata OECD
-    alfa_oecd <- ifelse("OECD" %in% data_filter, 1, 0)
-    data_oecd <- data_literasi %>%
-      select(literasi, rerata, sd) %>%
-      filter(
-        literasi == teks_mapel,
-        negara == "OECD"
-      )
-    x_inter <- as.numeric(data_oecd$rerata)
-    y_inter <- as.numeric(data_oecd$sd)
     # Plot
     data %>%
       ggplot(aes(x = rerata, y = sd)) +
@@ -1085,11 +1064,11 @@ server <- function(input, output) {
         color = "gray50", alpha = .1
       ) +
       geom_vline(
-        xintercept = x_inter, alpha = alfa_oecd,
+        xintercept = data_oecd$rerata, alpha = alfa_oecd,
         linetype = "dashed"
       ) +
       geom_hline(
-        yintercept = y_inter, alpha = alfa_oecd,
+        yintercept = data_oecd$sd, alpha = alfa_oecd,
         linetype = "dashed"
       ) +
       geom_point(
