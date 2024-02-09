@@ -467,7 +467,7 @@ ui <- page_navbar(
     conditionalPanel(
       "input.nav === 'Literasi'",
       selectInput("mapel",
-        p("Literasi:", style = "font-weight: bold;"),
+        div("Literasi:", style = "font-weight: bold;"),
         choices = c(
           "Matematika" = "mat",
           "Membaca" = "baca",
@@ -477,27 +477,30 @@ ui <- page_navbar(
       ),
       hr(),
       checkboxGroupInput("banding",
-        p("Bandingkan dengan:", style = "font-weight: bold;"),
+        div("Bandingkan dengan:", style = "font-weight: bold;"),
         choices = c(
-          "Rerata OECD" = "oecd",
           "Lima negara teratas" = "lima_atas",
           "Asia Tenggara" = "asia_tenggara",
           "Populasi setara" = "pop_besar",
-          "Negara-negara terpilih" = "pilih_negara"
+          "Pilih negara" = "pilih_negara"
         ),
         selected = "asia_tenggara"
       ),
       conditionalPanel(
         "input.banding.indexOf('pilih_negara') !== -1",
-        hr(),
         selectInput("banding_negara",
-          p("Negara-negara terpilih",
+          div("Negara:",
             style = "font-weight: bold;"
           ),
           choices = NULL,
           multiple = TRUE,
           selectize = TRUE
         )
+      ),
+      hr(),
+      div("Tampilkan:", style = "font-weight: bold;"),
+      checkboxInput("oecd_literasi", "Rerata OECD",
+                    value = TRUE
       )
     ),
     ## Sidebar pola pikir dan kecemasan ----
@@ -863,45 +866,133 @@ server <- function(input, output) {
       banding_negara_tren = input$banding_negara_tren
     )
   })
-  ## Plot literasi ----
-  output$plot_literasi <- renderPlot({
-    banding_negara <- input$banding_negara
-    # Fungsi untuk filter
-    gabung <- function(x) {
-      oecd <- c("OECD")
-      lima_atas <- c("SGP", "JPN", "KOR", "EST", "CHE")
-      asia_tenggara <- c("BRN", "MYS", "VNM", "SGP", "KHM", "THA", "PHL")
-      pop_besar <- c("USA", "MEX", "PHL", "BRA")
-      pilih_negara <- banding_negara
-      hasil <- c("IDN")
-      for (anggota in x) {
-        if (anggota == "oecd") {
-          hasil <- c(hasil, oecd)
-        } else if (anggota == "lima_atas") {
-          hasil <- c(hasil, lima_atas)
-        } else if (anggota == "asia_tenggara") {
-          hasil <- c(hasil, asia_tenggara)
-        } else if (anggota == "pop_besar") {
-          hasil <- c(hasil, pop_besar)
-        } else if (anggota == "pilih_negara") {
-          hasil <- c(hasil, banding_negara)
-        }
-      }
-
-      return(hasil)
-    }
-
-    # Memfilter data
-    data_filter <- gabung(input$banding)
+  ## Kotak peringkat ----
+  output$kotak_peringkat <- renderUI({
+    # Mempersiapkan data
     data <- data_literasi %>%
-      filter(kode_negara %in% data_filter)
+      filter(negara != "OECD") %>%
+      group_by(literasi) %>%
+      mutate(peringkat = as.integer(rank(-rerata, ties.method = "average")))
+    # Menentukan peringkat
+    mapel <- input$mapel
+    teks_mapel <- ifelse(mapel == "mat", "Matematika",
+                         ifelse(mapel == "baca", "Membaca",
+                                "Sains"
+                         )
+    )
+    peringkat <- data %>%
+      filter(negara == "Indonesia" & literasi == teks_mapel)
+    # Mendefinisikan kotak nilai
+    value_box(
+      title = "Peringkat",
+      value = peringkat$peringkat,
+      theme = "primary"
+    )
+  })
+  
+  ## Kotak rerata ----
+  output$kotak_rerata <- renderUI({
+    # Menentukan rerata
+    rerata_mat <- data_literasi %>%
+      filter(negara == "Indonesia" & literasi == "Matematika")
+    rerata_baca <- data_literasi %>%
+      filter(negara == "Indonesia" & literasi == "Membaca")
+    rerata_sains <- data_literasi %>%
+      filter(negara == "Indonesia" & literasi == "Sains")
+    
+    if (input$mapel == "mat") {
+      value_box("Rerata Skor",
+                round(rerata_mat$rerata, 0),
+                theme = "success"
+      )
+    } else if (input$mapel == "baca") {
+      value_box("Rerata Skor",
+                round(rerata_baca$rerata, 0),
+                theme = "success"
+      )
+    } else if (input$mapel == "sains") {
+      value_box("Rerata Skor",
+                round(rerata_sains$rerata, 0),
+                theme = "success"
+      )
+    }
+  })
+  
+  ## Kotak sd ----
+  output$kotak_sd <- renderUI({
+    # Menentukan simpangan baku
+    sd_mat <- data_literasi %>%
+      filter(negara == "Indonesia" & literasi == "Matematika")
+    sd_baca <- data_literasi %>%
+      filter(negara == "Indonesia" & literasi == "Membaca")
+    sd_sains <- data_literasi %>%
+      filter(negara == "Indonesia" & literasi == "Sains")
+    
+    if (input$mapel == "mat") {
+      value_box("Simpangan Baku",
+                sd_mat$sd,
+                theme = "secondary"
+      )
+    } else if (input$mapel == "baca") {
+      value_box("Simpangan Baku",
+                sd_baca$sd,
+                theme = "secondary"
+      )
+    } else {
+      value_box("Simpangan Baku",
+                sd_sains$sd,
+                theme = "secondary"
+      )
+    }
+  })
+  ## Fungsi gabung ----
+  gabung <- function(grup, individu) {
+    lima_atas <- c("SGP", "JPN", "KOR", "EST", "CHE")
+    asia_tenggara <- c("BRN", "MYS", "VNM", "SGP", "KHM", "THA", "PHL")
+    pop_besar <- c("USA", "MEX", "PHL", "BRA")
+    pilih_negara <- individu
+    hasil <- c("IDN")
+    for (anggota in grup) {
+      if (anggota == "lima_atas") {
+        hasil <- c(hasil, lima_atas)
+      } else if (anggota == "asia_tenggara") {
+        hasil <- c(hasil, asia_tenggara)
+      } else if (anggota == "pop_besar") {
+        hasil <- c(hasil, pop_besar)
+      } else if (anggota == "pilih_negara") {
+        hasil <- c(hasil, individu)
+      }
+    }
+    
+    return(hasil)
+  }
+  ## plot_literasi ----
+  output$plot_literasi <- renderPlot({
+    oecd_literasi <- input$oecd_literasi
+    banding <- input$banding
+    banding_negara <- input$banding_negara
     # Teks mapel
     mapel <- input$mapel
     teks_mapel <- ifelse(mapel == "mat", "Matematika",
-      ifelse(mapel == "baca", "Membaca",
-        "Sains"
-      )
+                         ifelse(mapel == "baca", "Membaca",
+                                "Sains"
+                         )
     )
+    # Memfilter data
+    data_filter <- gabung(banding, banding_negara)
+    data1 <- data_literasi %>%
+      filter(kode_negara %in% data_filter)
+    data_oecd <- data_literasi %>% 
+      filter(kode_negara == "OECD")
+    rerata_oecd <- data_oecd %>% 
+      filter(literasi == teks_mapel)
+    if (oecd_literasi == TRUE) {
+      data <- rbind(data1, data_oecd)
+      alfa <- 1
+    } else {
+      data <- data1
+      alfa <- 0
+    }
     # Plot
     data %>%
       filter(literasi == teks_mapel) %>%
@@ -916,6 +1007,8 @@ server <- function(input, output) {
       geom_line(aes(y = skor, group = negara, color = idn),
         linewidth = 1.5
       ) +
+      geom_hline(yintercept = rerata_oecd$rerata,
+                 alpha = alfa, linetype = "dashed") +
       geom_point(aes(y = skor), size = 2) +
       geom_point(aes(y = rerata), size = 3.5) +
       theme_bw(base_size = 14) +
@@ -929,86 +1022,6 @@ server <- function(input, output) {
         y = paste0("Skor Literasi ", teks_mapel),
         caption = "Catatan: Lima titik kecil merepresentasikan persentil 10, 25, 50 (median),\n75, dan 90. Titik yang lebih besar merupakan rerata."
       )
-  })
-
-  ## Kotak peringkat ----
-  output$kotak_peringkat <- renderUI({
-    # Mempersiapkan data
-    data <- data_literasi %>%
-      filter(negara != "OECD") %>%
-      group_by(literasi) %>%
-      mutate(peringkat = as.integer(rank(-rerata, ties.method = "average")))
-    # Menentukan peringkat
-    mapel <- input$mapel
-    teks_mapel <- ifelse(mapel == "mat", "Matematika",
-      ifelse(mapel == "baca", "Membaca",
-        "Sains"
-      )
-    )
-    peringkat <- data %>%
-      filter(negara == "Indonesia" & literasi == teks_mapel)
-    # Mendefinisikan kotak nilai
-    value_box(
-      title = "Peringkat",
-      value = peringkat$peringkat,
-      theme = "primary"
-    )
-  })
-
-  ## Kotak rerata ----
-  output$kotak_rerata <- renderUI({
-    # Menentukan rerata
-    rerata_mat <- data_literasi %>%
-      filter(negara == "Indonesia" & literasi == "Matematika")
-    rerata_baca <- data_literasi %>%
-      filter(negara == "Indonesia" & literasi == "Membaca")
-    rerata_sains <- data_literasi %>%
-      filter(negara == "Indonesia" & literasi == "Sains")
-
-    if (input$mapel == "mat") {
-      value_box("Rerata Skor",
-        round(rerata_mat$rerata, 0),
-        theme = "success"
-      )
-    } else if (input$mapel == "baca") {
-      value_box("Rerata Skor",
-        round(rerata_baca$rerata, 0),
-        theme = "success"
-      )
-    } else if (input$mapel == "sains") {
-      value_box("Rerata Skor",
-        round(rerata_sains$rerata, 0),
-        theme = "success"
-      )
-    }
-  })
-
-  ## Kotak sd ----
-  output$kotak_sd <- renderUI({
-    # Menentukan simpangan baku
-    sd_mat <- data_literasi %>%
-      filter(negara == "Indonesia" & literasi == "Matematika")
-    sd_baca <- data_literasi %>%
-      filter(negara == "Indonesia" & literasi == "Membaca")
-    sd_sains <- data_literasi %>%
-      filter(negara == "Indonesia" & literasi == "Sains")
-
-    if (input$mapel == "mat") {
-      value_box("Simpangan Baku",
-        sd_mat$sd,
-        theme = "secondary"
-      )
-    } else if (input$mapel == "baca") {
-      value_box("Simpangan Baku",
-        sd_baca$sd,
-        theme = "secondary"
-      )
-    } else {
-      value_box("Simpangan Baku",
-        sd_sains$sd,
-        theme = "secondary"
-      )
-    }
   })
   ## plot_variasi ----
   output$plot_variasi <- renderPlot({
