@@ -1068,7 +1068,7 @@ server <- function(input, output) {
     data %>%
       ggplot(aes(x = rerata, y = sd)) +
       geom_smooth(
-        method = "lm", formula = y ~ x + I(x^2),
+        method = "lm", formula = y ~ x,
         color = "gray50", alpha = .1
       ) +
       geom_vline(
