@@ -1135,7 +1135,7 @@ server <- function(input, output) {
     asia_tenggara <- c("BRN", "MYS", "VNM", "SGP", "KHM", "THA", "PHL")
     pop_besar <- c("USA", "MEX", "PHL", "BRA")
     cemas_pikir_negara <- input$cemas_pikir_negara
-    
+
     cemas_pikir_grup <- input$cemas_pikir_grup
     if (cemas_pikir_grup == "lima_atas") {
       pilih_negara_cemas_pikir <- c("IDN", lima_atas)
@@ -1155,15 +1155,17 @@ server <- function(input, output) {
       jenis_literasi <- "Sains"
     }
     # Menyiapkan data
-    data <- lit_cemas_pikir %>% 
-      select(kode_negara, negara,
-             starts_with("rerata_"),
-             persen_pikir_tumbuh) %>% 
+    data <- lit_cemas_pikir %>%
+      select(
+        kode_negara, negara,
+        starts_with("rerata_"),
+        persen_pikir_tumbuh
+      ) %>%
       pivot_longer(
         cols = starts_with("rerata_"),
         names_to = "literasi",
         values_to = "rerata"
-      ) %>% 
+      ) %>%
       mutate(
         literasi = ifelse(
           literasi == "rerata_mat",
@@ -1174,8 +1176,8 @@ server <- function(input, output) {
             "Sains"
           )
         )
-      ) %>% 
-      filter(literasi == jenis_literasi) %>% 
+      ) %>%
+      filter(literasi == jenis_literasi) %>%
       drop_na()
     # Menyiapkan titik yang disorot
     data_sorot <- data %>%
@@ -1183,7 +1185,7 @@ server <- function(input, output) {
       select(
         kode_negara, negara, literasi, rerata,
         persen_pikir_tumbuh
-      ) %>% 
+      ) %>%
       drop_na()
     # Menyiapkan rerata OECD
     rerata_oecd <- data %>%
@@ -1196,8 +1198,8 @@ server <- function(input, output) {
       cemas_pikir_oecd == TRUE, 1, 0
     )
     # Plot
-    plot <- data %>% 
-      filter(kode_negara != "OECD") %>% 
+    plot <- data %>%
+      filter(kode_negara != "OECD") %>%
       ggplot(aes(x = persen_pikir_tumbuh, y = rerata)) +
       geom_hline(
         yintercept = as.numeric(rerata_oecd[1]),
@@ -1261,15 +1263,17 @@ server <- function(input, output) {
       jenis_literasi <- "Sains"
     }
     # Menyiapkan data
-    data <- lit_cemas_pikir %>% 
-      select(kode_negara, negara,
-             starts_with("rerata_"),
-             persen_pikir_tumbuh) %>% 
+    data <- lit_cemas_pikir %>%
+      select(
+        kode_negara, negara,
+        starts_with("rerata_"),
+        persen_pikir_tumbuh
+      ) %>%
       pivot_longer(
         cols = starts_with("rerata_"),
         names_to = "literasi",
         values_to = "rerata"
-      ) %>% 
+      ) %>%
       mutate(
         literasi = ifelse(
           literasi == "rerata_mat",
@@ -1280,8 +1284,8 @@ server <- function(input, output) {
             "Sains"
           )
         )
-      ) %>% 
-      filter(literasi == jenis_literasi) %>% 
+      ) %>%
+      filter(literasi == jenis_literasi) %>%
       drop_na()
     # Model
     model <- lm(rerata ~ persen_pikir_tumbuh, data = data)
@@ -1314,7 +1318,7 @@ server <- function(input, output) {
       ) %>%
       mutate(pola_pikir = ifelse(endsWith(pola_pikir, "tetap"),
         "tetap", "tumbuh"
-      )) %>% 
+      )) %>%
       drop_na()
     if (input$cemas_pikir_grup == "lima_atas") {
       data %>%
@@ -1422,7 +1426,7 @@ server <- function(input, output) {
       relocate(skor, .after = last_col())
     # Menghitung baris
     baris_cemas_pikir_negara <- data %>%
-      filter(kode_negara %in% cemas_pikir_negara) %>% 
+      filter(kode_negara %in% cemas_pikir_negara) %>%
       nrow()
     # Plot
     if (input$cemas_pikir_grup == "lima_atas") {
@@ -1940,7 +1944,7 @@ server <- function(input, output) {
     } else {
       filter_negara <- gabung(banding, banding_negara)
     }
-    
+
     data_awal <- tren_literasi %>%
       bind_rows(., rerata_oecd) %>%
       filter(kode_negara %in% filter_negara)
@@ -1963,7 +1967,7 @@ server <- function(input, output) {
     plot <- data %>%
       ggplot(aes(x = tahun, y = rerata, color = negara)) +
       geom_line(aes(group = negara),
-                linewidth = 2, alpha = .6
+        linewidth = 2, alpha = .6
       ) +
       geom_point(size = 3) +
       scale_color_brewer(palette = "Dark2") +
@@ -1975,8 +1979,10 @@ server <- function(input, output) {
         legend.position = "bottom",
         legend.title = element_blank()
       ) +
-      labs(x = "Tahun",
-           y = paste0("Rerata Skor Literasi ", jenis_literasi))
+      labs(
+        x = "Tahun",
+        y = paste0("Rerata Skor Literasi ", jenis_literasi)
+      )
     return(plot)
   }
   ## plot_tren_mat ----
