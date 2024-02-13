@@ -658,7 +658,14 @@ ui <- page_navbar(
     "Literasi",
     layout_columns(
       value_box(
-        title = "Peringkat",
+        title = div(
+          "Peringkat",
+          tooltip(
+            bsicons::bs_icon("question-circle"),
+            p("Peringkat dari 81 negara atau wilayah.", style = "text-align: left;"),
+            placement = "auto"
+          )
+        ),
         value = textOutput("teks_peringkat"),
         theme = "primary"
       ),
@@ -820,7 +827,8 @@ ui <- page_navbar(
         nav_panel(
           ### Alat ----
           title = "Alat",
-          p("Dasbor ini dikembangkan dengan menggunakan bahasa pemrogram", a("R", href = "https://www.R-project.org/", target = "_blank"), "dan paket", a("Shiny.", href = "https://CRAN.R-project.org/package=shiny", target = "_blank"), "Paket", a("shinylive", href = "https://posit-dev.github.io/r-shinylive/", target = "_blank"), "digunakan untuk mengekspor aplikasi ini agar dapat dijalankan di peramban web tanpa peladen R yang terpisah. Tata letak dasbor ini diatur dengan menggunakan ", a("bslib.", href = "https://CRAN.R-project.org/package=bslib", target = "_blank"))
+          p("Dasbor ini dikembangkan dengan menggunakan bahasa pemrogram", a("R", href = "https://www.R-project.org/", target = "_blank"), "dan paket", a("Shiny.", href = "https://CRAN.R-project.org/package=shiny", target = "_blank"), "Paket", a("shinylive", href = "https://posit-dev.github.io/r-shinylive/", target = "_blank"), "digunakan untuk mengekspor aplikasi ini agar dapat dijalankan di peramban web tanpa peladen R yang terpisah. Tata letak dasbor ini diatur dengan menggunakan ", a("bslib.", href = "https://CRAN.R-project.org/package=bslib", target = "_blank")),
+          p("Semua diagram statistik dalam dasbor ini dibuat dengan menggunakan paket ", a("ggplot2.", href = "https://ggplot2.tidyverse.org/", target = "_blank"), " Paket ", a("dplyr", href = "https://CRAN.R-project.org/package=dplyr"), " digunakan untuk memanipulasi data yang diperoleh dari OECD. Kedua paket tersebut masuk ke dalam metapaket ", a("tidyverse.", href = "https://doi.org/10.21105/joss.01686", target = "_blank"))
         ),
         nav_panel(
           ### Pengembang ----
@@ -1291,7 +1299,9 @@ server <- function(input, output) {
     model <- lm(rerata ~ persen_pikir_tumbuh, data = data)
     ringkasan_model <- summary(model)
     # R kuadrat
-    round(ringkasan_model$r.squared, 3)
+    r2 <- ringkasan_model$r.squared
+    # Cetak R kuadrat
+    scales::label_percent(accuracy = .01)(r2)
   })
   ## plot_cemas_pikir ----
   output$plot_cemas_pikir <- renderPlot({
@@ -1709,6 +1719,8 @@ server <- function(input, output) {
 
   ## plot_sosek_lit ----
   output$plot_sosek_lit <- renderPlot({
+    oecd_setara <- input$oecd_setara
+    alfa <- ifelse(oecd_setara == TRUE, 1, 0)
     # Filter
     if (input$literasi_setara == "mat") {
       filter_literasi <- "Matematika"
@@ -1717,7 +1729,7 @@ server <- function(input, output) {
     } else {
       filter_literasi <- "Sains"
     }
-    # Data awal
+    # Data
     data <- data_sosek %>%
       select(
         kode_negara, negara, literasi,
@@ -1726,6 +1738,22 @@ server <- function(input, output) {
       filter(kode_negara != "OECD") %>%
       filter(literasi == filter_literasi) %>%
       drop_na()
+    # Data OECD
+    data_oecd <- data_sosek %>%
+      select(
+        kode_negara, negara, literasi,
+        rerata_sosek, rerata_literasi
+      ) %>%
+      filter(kode_negara == "OECD") %>%
+      filter(literasi == filter_literasi)
+    # Data Indonesia
+    data_idn <- data_sosek %>%
+      select(
+        kode_negara, negara, literasi,
+        rerata_sosek, rerata_literasi
+      ) %>%
+      filter(kode_negara == "IDN") %>%
+      filter(literasi == filter_literasi)
     # Plot
     if (input$literasi_setara == "mat") {
       # Mencari pencilan pada model linear
@@ -1749,11 +1777,32 @@ server <- function(input, output) {
         geom_point(aes(color = pencilan),
           size = 3, alpha = .6, show.legend = FALSE
         ) +
+        geom_vline(
+          xintercept = data_oecd$rerata_sosek,
+          linetype = "dashed",
+          alpha = alfa
+        ) +
+        geom_hline(
+          yintercept = data_oecd$rerata_literasi,
+          linetype = "dashed",
+          alpha = alfa
+        ) +
+        geom_point(
+          data = data_idn,
+          aes(x = rerata_sosek, y = rerata_literasi),
+          size = 3, color = "#e7298a"
+        ) +
         geom_label(
           data = data_pencilan,
           aes(x = rerata_sosek, y = rerata_literasi, label = negara),
           nudge_x = c(0, 0, 0, 0, .25, -.1),
           nudge_y = c(-30, -30, 30, 30, -20, 30)
+        ) +
+        geom_label(
+          data = data_idn,
+          aes(x = rerata_sosek, y = rerata_literasi, label = negara),
+          nudge_x = -.125,
+          nudge_y = 30
         ) +
         scale_color_brewer(palette = "Dark2") +
         scale_fill_brewer(palette = "Dark2") +
@@ -1772,6 +1821,27 @@ server <- function(input, output) {
         geom_point(
           size = 3, alpha = .6,
           color = "#1b9e77", show.legend = FALSE
+        ) +
+        geom_vline(
+          xintercept = data_oecd$rerata_sosek,
+          linetype = "dashed",
+          alpha = alfa
+        ) +
+        geom_hline(
+          yintercept = data_oecd$rerata_literasi,
+          linetype = "dashed",
+          alpha = alfa
+        ) +
+        geom_point(
+          data = data_idn,
+          aes(x = rerata_sosek, y = rerata_literasi),
+          size = 3, color = "#e7298a"
+        ) +
+        geom_label(
+          data = data_idn,
+          aes(x = rerata_sosek, y = rerata_literasi, label = negara),
+          nudge_x = -.125,
+          nudge_y = 30
         ) +
         theme_bw(base_size = 14) +
         labs(
@@ -1799,14 +1869,46 @@ server <- function(input, output) {
       filter(kode_negara != "OECD") %>%
       filter(literasi == filter_literasi) %>%
       drop_na()
-    # Mencari pencilan pada model linear
+    # Model linear
     model_lm <- lm(rerata_literasi ~ rerata_sosek,
       data = data
     )
-    r2 <- summary(model_lm)$r.squared
+    jarak_cook <- cooks.distance(model_lm)
+    data <- data %>%
+      mutate(
+        jarak_cook = jarak_cook
+      )
+    rerata_jarak_cook <- mean(data$jarak_cook, na.rm = TRUE)
+    data <- data %>%
+      mutate(
+        pencilan = ifelse(
+          jarak_cook > 3 * rerata_jarak_cook,
+          TRUE, FALSE
+        )
+      )
+    # Menghitung R kuadrat
+    if (input$literasi_setara == "mat") {
+      data_model <- data %>%
+        select(-literasi, -jarak_cook) %>%
+        group_by(pencilan) %>%
+        do(
+          broom::augment(
+            lm(rerata_literasi ~ rerata_sosek, data = .)
+          )
+        )
+      m_rerata_literasi <- mean(data$rerata_literasi)
+      data_model <- data_model %>%
+        mutate(
+          obs_pred2 = (rerata_literasi - .fitted)^2,
+          obs_mean2 = (rerata_literasi - m_rerata_literasi)^2
+        )
+      r2 <- 1 - sum(data_model$obs_pred2) / sum(data_model$obs_mean2)
+    } else {
+      r2 <- summary(model_lm)$r.squared
+    }
 
     # Nilai R kuadrat
-    round(r2, 3)
+    scales::label_percent(accuracy = .01)(r2)
   })
   ## plot_kuintil_sosek_lit ----
   output$plot_kuintil_sosek_lit <- renderPlot({
