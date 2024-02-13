@@ -828,7 +828,7 @@ ui <- page_navbar(
           ### Alat ----
           title = "Alat",
           p("Dasbor ini dikembangkan dengan menggunakan bahasa pemrogram", a("R", href = "https://www.R-project.org/", target = "_blank"), "dan paket", a("Shiny.", href = "https://CRAN.R-project.org/package=shiny", target = "_blank"), "Paket", a("shinylive", href = "https://posit-dev.github.io/r-shinylive/", target = "_blank"), "digunakan untuk mengekspor aplikasi ini agar dapat dijalankan di peramban web tanpa peladen R yang terpisah. Tata letak dasbor ini diatur dengan menggunakan ", a("bslib.", href = "https://CRAN.R-project.org/package=bslib", target = "_blank")),
-          p("Semua diagram statistik dalam dasbor ini dibuat dengan menggunakan paket ", a("ggplot2.", href = "https://ggplot2.tidyverse.org/", target = "_blank"), " Paket ", a("dplyr", href = "https://CRAN.R-project.org/package=dplyr"), " digunakan untuk memanipulasi data yang diperoleh dari OECD. Kedua paket tersebut masuk ke dalam metapaket ", a("tidyverse.", href = "https://doi.org/10.21105/joss.01686", target = "_blank"))
+          p("Semua diagram statistik dalam dasbor ini dibuat dengan menggunakan paket ", a("ggplot2.", href = "https://ggplot2.tidyverse.org/", target = "_blank"), " Paket ", a("dplyr", href = "https://CRAN.R-project.org/package=dplyr", target = "_blank"), " digunakan untuk memanipulasi data yang diperoleh dari OECD. Kedua paket tersebut masuk ke dalam metapaket ", a("tidyverse.", href = "https://doi.org/10.21105/joss.01686", target = "_blank"))
         ),
         nav_panel(
           ### Pengembang ----
