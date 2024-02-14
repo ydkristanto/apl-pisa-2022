@@ -720,7 +720,21 @@ ui <- page_navbar(
         theme = "secondary"
       ),
       card(
-        card_header("Persentase Siswa dengan Pola Pikir Tetap dan Tumbuh"),
+        card_header(
+          "Persentase Siswa dengan Pola Pikir Tetap dan Tumbuh",
+          tooltip(
+            bsicons::bs_icon("question-circle"),
+            p(
+              "Siswa dengan pola pikir tetap ",
+              tags$span("(fixed mindset)", style = "font-style: italic;"),
+              " meyakini bahwa seseorang itu terlahir dengan karakteristik yang tetap dan tidak dapat diubah. Sebaliknya, siswa dengan pola pikir tumbuh ",
+              tags$span("(growth mindset)", style = "font-style: italic;"),
+              " meyakini bahwa kemampuan dan inteligensi seseorang itu dapat berubah seiring berjalannya waktu.",
+              style = "text-align: left;"
+            ),
+            placement = "auto"
+          )
+        ),
         plotOutput("plot_cemas_pikir")
       ),
       card(
