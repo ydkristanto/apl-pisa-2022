@@ -6,7 +6,7 @@ library(bslib)
 # Data ----
 ## Data negara terurut ----
 daftar_kode_urut <- c("MAR", "ARG", "BRA", "CHL", "COL", "CRI", "PRY", "PER", "URY", "USA", "SLV", "GTM", "JAM", "CAN", "MEX", "PAN", "DOM", "SAU", "AZE", "BRN", "PHL", "HKG", "IDN", "ISR", "JPN", "KHM", "KAZ", "KOR", "MAC", "MYS", "MNG", "PSE", "QAT", "SGP", "THA", "TWN", "TUR", "ARE", "UZB", "VNM", "JOR", "ALB", "AUT", "NLD", "BEL", "GBR", "BGR", "DNK", "EST", "FIN", "GEO", "HUN", "IRL", "ISL", "ITA", "DEU", "XKK", "HRV", "LVA", "LTU", "MKD", "MLT", "MDA", "MNE", "NOR", "FRA", "POL", "PRT", "CZE", "ROU", "SRB", "CYP", "SVN", "SVK", "ESP", "SWE", "CHE", "UKR", "GRC", "AUS", "NZL")
-daftar_negara_urut <- c("Maroko", "Argentina", "Brazil", "Chili", "Kolombia", "Kosta Rika", "Paraguay", "Peru", "Uruguay", "Amerika Serikat", "El Salvador", "Guatemala", "Jamaika", "Kanada", "Meksiko", "Panama", "Republik Dominika", "Arab Saudi", "Azerbaijan", "Brunei Darussalam", "Filipina", "Hongkong", "Indonesia", "Israel", "Jepang", "Kamboja", "Kazakstan", "Korea", "Makau", "Malaysia", "Mongolia", "Palestina", "Qatar", "Singapura", "Thailand", "Tionghoa Taipei", "Turki", "Uni Emirat Arab", "Uzbekistan", "Vietnam", "Yordania", "Albania", "Austria", "Belanda", "Belgia", "Britania Raya", "Bulgaria", "Denmark", "Estonia", "Finlandia", "Georgia", "Hungaria", "Irlandia", "Islandia", "Italia", "Jerman", "Kosovo", "Kroasia", "Latvia", "Lithuania", "Makedonia Utara", "Malta", "Moldova", "Montenegro", "Norwegia", "Perancis", "Polandia", "Portugal", "Republik Ceko", "Rumania", "Serbia", "Siprus", "Slovenia", "Slowakia", "Spanyol", "Swedia", "Swiss", "Ukraina", "Yunani", "Australia", "Selandia Baru")
+daftar_negara_urut <- c("Maroko", "Argentina", "Brazil", "Chili", "Kolombia", "Kosta Rika", "Paraguay", "Peru", "Uruguay", "Amerika Serikat*", "El Salvador", "Guatemala", "Jamaika*", "Kanada*", "Meksiko", "Panama*", "Republik Dominika", "Arab Saudi", "Azerbaijan", "Brunei Darussalam", "Filipina", "Hongkong*", "Indonesia", "Israel", "Jepang", "Kamboja", "Kazakstan", "Korea", "Makau", "Malaysia", "Mongolia", "Palestina", "Qatar", "Singapura", "Thailand", "Tionghoa Taipei", "Turki", "Uni Emirat Arab", "Uzbekistan", "Vietnam", "Yordania", "Albania", "Austria", "Belanda*", "Belgia", "Britania Raya*", "Bulgaria", "Denmark*", "Estonia", "Finlandia", "Georgia", "Hungaria", "Irlandia*", "Islandia", "Italia", "Jerman", "Kosovo", "Kroasia", "Latvia*", "Lithuania", "Makedonia Utara", "Malta", "Moldova", "Montenegro", "Norwegia", "Perancis", "Polandia", "Portugal", "Republik Ceko", "Rumania", "Serbia", "Siprus", "Slovenia", "Slowakia", "Spanyol", "Swedia", "Swiss", "Ukraina (18 dari 27 wilayah)", "Yunani", "Australia*", "Selandia Baru*")
 daftar_benua_urut <- c(
   "Afrika", rep("Amerika Selatan", 8),
   rep("Amerika Utara", 8), rep("Asia", 24),
@@ -501,7 +501,13 @@ ui <- page_navbar(
       conditionalPanel(
         "input.banding.indexOf('pilih_negara') !== -1",
         selectInput("banding_negara",
-          div("Negara:",
+          div(
+            "Negara:",
+            tooltip(
+              bsicons::bs_icon("question-circle"),
+              p("* Kehati-hatian diperlukan ketika memaknai estimasi untuk negara-negara dengan tanda bintang (*) karena paling tidak terdapat satu kriteria pemilihan sampel PISA yang tidak terpenuhi.", style = "text-align: left;"),
+              placement = "auto"
+            ),
             style = "font-weight: bold;"
           ),
           choices = NULL,
@@ -531,7 +537,15 @@ ui <- page_navbar(
       conditionalPanel(
         "input.cemas_pikir_grup == 'pilih_negara'",
         selectInput("cemas_pikir_negara",
-          div("Negara:", style = "font-weight: bold;"),
+          div(
+            "Negara:",
+            tooltip(
+              bsicons::bs_icon("question-circle"),
+              p("* Kehati-hatian diperlukan ketika memaknai estimasi untuk negara-negara dengan tanda bintang (*) karena paling tidak terdapat satu kriteria pemilihan sampel PISA yang tidak terpenuhi.", style = "text-align: left;"),
+              placement = "auto"
+            ),
+            style = "font-weight: bold;"
+          ),
           choices = NULL,
           multiple = TRUE,
           selectize = TRUE
@@ -544,9 +558,9 @@ ui <- page_navbar(
         value = TRUE
       )
     ),
-    ## Sidebar proses dan konten ----
+    ## Sidebar penalaran dan konten ----
     conditionalPanel(
-      "input.nav === 'Proses dan Konten'",
+      "input.nav === 'Penalaran dan Konten'",
       checkboxGroupInput("banding_pros_kon",
         div("Bandingkan dengan:", style = "font-weight: bold;"),
         choices = c(
@@ -560,7 +574,13 @@ ui <- page_navbar(
       conditionalPanel(
         "input.banding_pros_kon.indexOf('pilih_negara') !== -1",
         selectInput("banding_negara_pros_kon",
-          div("Negara:",
+          div(
+            "Negara:",
+            tooltip(
+              bsicons::bs_icon("question-circle"),
+              p("* Kehati-hatian diperlukan ketika memaknai estimasi untuk negara-negara dengan tanda bintang (*) karena paling tidak terdapat satu kriteria pemilihan sampel PISA yang tidak terpenuhi.", style = "text-align: left;"),
+              placement = "auto"
+            ),
             style = "font-weight: bold;"
           ),
           choices = setNames(
@@ -592,7 +612,15 @@ ui <- page_navbar(
       ),
       hr(),
       selectizeInput("negara_setara",
-        div("Bandingkan dengan:", style = "font-weight: bold;"),
+        div(
+          "Bandingkan dengan:",
+          tooltip(
+            bsicons::bs_icon("question-circle"),
+            p("* Kehati-hatian diperlukan ketika memaknai estimasi untuk negara-negara dengan tanda bintang (*) karena paling tidak terdapat satu kriteria pemilihan sampel PISA yang tidak terpenuhi.", style = "text-align: left;"),
+            placement = "auto"
+          ),
+          style = "font-weight: bold;"
+        ),
         choices = setNames(
           daftar_kode,
           daftar_negara
@@ -623,7 +651,13 @@ ui <- page_navbar(
       conditionalPanel(
         "input.banding_tren.indexOf('pilih_negara') !== -1",
         selectInput("banding_negara_tren",
-          div("Negara:",
+          div(
+            "Negara:",
+            tooltip(
+              bsicons::bs_icon("question-circle"),
+              p("* Kehati-hatian diperlukan ketika memaknai estimasi untuk negara-negara dengan tanda bintang (*) karena paling tidak terdapat satu kriteria pemilihan sampel PISA yang tidak terpenuhi.", style = "text-align: left;"),
+              placement = "auto"
+            ),
             style = "font-weight: bold;"
           ),
           choices = setNames(
@@ -744,15 +778,35 @@ ui <- page_navbar(
       col_widths = c(8, 4, 6, 6)
     )
   ),
-  ## Panel proses dan konten ----
+  ## Panel penalaran dan konten ----
   nav_panel(
-    "Proses dan Konten",
+    "Penalaran dan Konten",
     layout_column_wrap(
       width = 1 / 2,
       height = 300,
       navset_card_underline(
-        nav_panel(title = "Penalaran", plotOutput("plot_nalar_banding")),
-        nav_panel(title = "Konten", plotOutput("plot_konten_banding"))
+        nav_panel(
+          title = div(
+            "Pemecahan Masalah dan Penalaran",
+            tooltip(
+              bsicons::bs_icon("question-circle"),
+              p("Kerangka kerja PISA 2022 menganggap bahwa penalaran matematis dan siklus pemecahan masalah merupakan dua hal yang saling berhubungan. Siklus pemecahan masalah tersebut terdiri dari memformulasikan, menerapkan, dan menginterpretasi (dan mengevaluasi).", style = "text-align: left;"),
+              placement = "auto"
+            )
+          ),
+          plotOutput("plot_nalar_banding")
+        ),
+        nav_panel(
+          title = div(
+            "Konten",
+            tooltip(
+              bsicons::bs_icon("question-circle"),
+              p("Kerangka kerja PISA 2022 membagi pengetahuan konten matematika menjadi empat kategori, yaitu perubahan dan hubungan, ruang dan bentuk, kuantitas, serta ketidakpastian dan data.", style = "text-align: left;"),
+              placement = "auto"
+            )
+          ),
+          plotOutput("plot_konten_banding")
+        )
       ),
       layout_column_wrap(
         width = 1,
@@ -1072,6 +1126,7 @@ server <- function(input, output) {
       geom_point(aes(y = rerata), size = 3.5) +
       theme_bw(base_size = 14) +
       scale_color_brewer(palette = "Dark2") +
+      scale_x_discrete(labels = scales::label_wrap(10)) +
       theme(
         axis.title.x = element_blank(),
         legend.position = "none",
@@ -1350,6 +1405,9 @@ server <- function(input, output) {
         mutate(negara = fct_reorder2(negara, pola_pikir, persentase)) %>%
         ggplot(aes(x = persentase, y = negara, col = pola_pikir)) +
         geom_col(fill = "white") +
+        scale_y_discrete(
+          labels = scales::label_wrap(10)
+        ) +
         scale_color_brewer(
           palette = "Dark2",
           name = "Pola pikir",
@@ -1369,7 +1427,10 @@ server <- function(input, output) {
         mutate(negara = fct_reorder2(negara, pola_pikir, persentase)) %>%
         ggplot(aes(x = persentase, y = negara, col = pola_pikir)) +
         geom_col(fill = "white") +
-        scale_y_discrete(guide = guide_axis(n.dodge = 2)) +
+        scale_y_discrete(
+          guide = guide_axis(n.dodge = 2),
+          labels = scales::label_wrap(10)
+        ) +
         scale_color_brewer(
           palette = "Dark2",
           name = "Pola pikir",
@@ -1388,6 +1449,9 @@ server <- function(input, output) {
         mutate(negara = fct_reorder2(negara, pola_pikir, persentase)) %>%
         ggplot(aes(x = persentase, y = negara, col = pola_pikir)) +
         geom_col(fill = "white") +
+        scale_y_discrete(
+          labels = scales::label_wrap(10)
+        ) +
         scale_color_brewer(
           palette = "Dark2",
           name = "Pola pikir",
@@ -1407,6 +1471,9 @@ server <- function(input, output) {
         drop_na() %>%
         ggplot(aes(x = persentase, y = negara, col = pola_pikir)) +
         geom_col(fill = "white") +
+        scale_y_discrete(
+          labels = scales::label_wrap(10)
+        ) +
         scale_color_brewer(
           palette = "Dark2",
           name = "Pola pikir",
@@ -1681,7 +1748,9 @@ server <- function(input, output) {
         linewidth = 2, alpha = .6
       ) +
       geom_point(size = 3) +
-      scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+      scale_x_discrete(
+        labels = scales::label_wrap(10)
+      ) +
       guides(color = guide_legend(ncol = 4)) +
       theme_bw(base_size = 14) +
       scale_color_brewer(palette = "Dark2", name = "Negara") +
@@ -1723,7 +1792,9 @@ server <- function(input, output) {
         aes(x = konten, y = rerata),
         size = 3, color = "#d95f02"
       ) +
-      scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+      scale_x_discrete(
+        labels = scales::label_wrap(10)
+      ) +
       theme_bw(base_size = 12) +
       theme(
         axis.title.x = element_blank()
